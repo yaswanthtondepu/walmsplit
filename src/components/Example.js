@@ -47,7 +47,7 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
   return item === undefined ? (
     <div></div>
   ) : (
-    <Card style={{ width: "18rem" }}>
+    <Card style={{ width: "12rem", padding:"1rem" }}>
       <Card.Img variant="top" src={item["image"]} />
       <Card.Body>
         <Card.Title>{item["name"]}</Card.Title>
