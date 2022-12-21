@@ -8,11 +8,11 @@ import ToggleBox from "./components/ToggleBox";
 import TotalBox from "./components/TotalBox";
 
 const axios = require("axios").default;
-const instance = axios.create({
-  baseURL: "https://finalspaceapi.com/api/v0/character/?limit=2",
-  withCredentials: true,
-  timeout: 1000,
-});
+// const instance = axios.create({
+//   baseURL: "https://finalspaceapi.com/api/v0/character/?limit=2",
+//   withCredentials: true,
+//   timeout: 1000,
+// });
 
 function App() {
   const persons = ["Divya", "Pooja", "Yash", "Maddy", "Bannu", "Sunil", "Sai", "Ramya", "Yashwanth"];
@@ -28,8 +28,8 @@ function App() {
   return (
     <div>
       <Input itemcallback={setitems} />
-      <div style={{ display: "flex", justifyContent: "space-around", marginTop:"2rem" }}>
-        <div>
+      <div style={{ display: "flex", justifyContent: "space-around", marginTop:"2rem",padding:"0 0 0 30px" }}>
+        <div style={{flex:1}}>
           <ToggleBox
             persons={persons}
             activecallback={setmainActive}

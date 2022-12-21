@@ -4,13 +4,24 @@ import Card from "react-bootstrap/Card";
 import { useState, useEffect } from "react";
 function BasicExample({ persons, item, totalcallback, total, idx }) {
   const [active, setactive] = useState([]);
-  useEffect(() => {
-    const newactive = active.filter((activeperson) =>
-      persons.includes(activeperson)
-    );
-    setactive([...newactive]);
-    console.log("person changed");
+  const [checked,setchecked] = useState(false);
+  const [taxable,settaxable] = useState(false);
+    useEffect(() => {
+    if (checked){
+      setactive([...persons])
+    }
+    else{
+      const newactive = active.filter((activeperson) =>
+        persons.includes(activeperson)
+      );
+      setactive([...newactive]);
+      console.log("person changed");
+    }
+    
   }, [persons]);
+  useEffect(()=>{
+    checked ? setactive([...persons]) : setactive([]);
+  },[checked])
 
   useEffect(() => {
     if (idx === 0) {
@@ -58,7 +69,8 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
           <label className="switch">
             <input
               onClick={(e) => {
-                e.target.checked ? setactive([...persons]) : setactive([]);
+                setchecked(e.target.checked);
+                
               }}
               type="checkbox"
             />
@@ -105,4 +117,4 @@ function SearchBar() {
   );
 }
 
-export default BasicExample;
+export default BasicExample ;

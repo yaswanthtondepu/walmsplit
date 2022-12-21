@@ -14,8 +14,9 @@ const TotalBox = ({ items, persons, partitions }) => {
             }
         })
     });
-    var total = 0;
+    let total = 0;
     for (var key in eachprice) {
+        console.log(eachprice[key])
         total += eachprice[key]
     }
     var itemnames = []
@@ -27,7 +28,7 @@ const TotalBox = ({ items, persons, partitions }) => {
     console.log(itemnames)
     console.log(total)
     return <div
-        style={{ boxShadow: " rgba(0, 0, 0, 0.1) 0px 4px 12px", width: "200px", padding:"1rem" }}>
+        style={{ boxShadow: " rgba(0, 0, 0, 0.1) 0px 4px 12px", width: "300px", padding:"1rem" }}>
 
         {itemnames.map((item, idx) => {
             console.log(itemnames[idx])
