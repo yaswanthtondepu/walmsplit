@@ -15,7 +15,7 @@ const axios = require("axios").default;
 // });
 
 function App() {
-  const persons = ["Divya", "Pooja", "Yash", "Maddy", "Bannu", "Sunil", "Sai", "Ramya", "Yashwanth"];
+  const persons = ["Divya", "Pooja", "Yash", "Maddy", "Bannu", "Sunil", "Sai", "Ramya", "Yaswanth"];
   const [mainActive, setmainActive] = useState([]);
   const [items, setitems] = useState([]);
   const [partition, setpartititon] = useState([])
@@ -28,15 +28,15 @@ function App() {
   return (
     <div>
       <Input itemcallback={setitems} />
-      <div style={{ display: "flex", justifyContent: "space-around", marginTop:"2rem",padding:"0 0 0 30px" }}>
-        <div style={{flex:1}}>
+      <div style={{ display: "flex", justifyContent: "space-around", marginTop: "2rem", padding: "0 0 0 30px" }}>
+        <div style={{ flex: 1 }}>
           <ToggleBox
             persons={persons}
             activecallback={setmainActive}
             active={mainActive}
           ></ToggleBox>
 
-          <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto", marginTop:"2rem", height:"calc(100vh - 250px)", overflow:"auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto", marginTop: "2rem", height: "calc(100vh - 250px)", overflow: "auto" }}>
             {items.map((item, idx) => {
               // console.log("running");
               return (
@@ -50,7 +50,7 @@ function App() {
         </div>
       </div>
 
-    
+
 
 
     </div>
