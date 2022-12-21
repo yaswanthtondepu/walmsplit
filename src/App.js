@@ -20,41 +20,49 @@ function App() {
   const [items, setitems] = useState([]);
   const [partition, setpartititon] = useState([])
   useEffect(() => {
+    if (items.length != partition.length){
+    console.log("set partition running")
     setpartititon(items.map((item, idx) => {
       return []
     }))
-  }, [items]);
+  }
 
-  return (
-    <div>
-      <Input itemcallback={setitems} />
-      <div style={{ display: "flex", justifyContent: "space-around", marginTop: "2rem", padding: "0 0 0 30px" }}>
-        <div style={{ flex: 1 }}>
-          <ToggleBox
-            persons={persons}
-            activecallback={setmainActive}
-            active={mainActive}
-          ></ToggleBox>
 
-          <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto", marginTop: "2rem", height: "calc(100vh - 250px)", overflow: "auto" }}>
-            {items.map((item, idx) => {
-              // console.log("running");
-              return (
-                <BasicReact mainActive={mainActive} total={partition} totalcallback={setpartititon} key={idx} idx={idx} item={item} persons={mainActive}></BasicReact>
-              );
-            })}
-          </div>
-        </div>
-        <div>
-          <TotalBox persons={mainActive} partitions={partition} items={items} />
+
+}, [items]);
+
+
+
+return (
+  <div>
+    <Input itemcallback={setitems} />
+    <div style={{ display: "flex", justifyContent: "space-around", marginTop: "2rem", padding: "0 0 0 30px" }}>
+      <div style={{ flex: 1 }}>
+        <ToggleBox
+          persons={persons}
+          activecallback={setmainActive}
+          active={mainActive}
+        ></ToggleBox>
+
+        <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto", marginTop: "2rem", height: "calc(100vh - 250px)", overflow: "auto" }}>
+          {items.map((item, idx) => {
+            // console.log("running");
+            return (
+              <BasicReact mainActive={mainActive} total={partition} totalcallback={setpartititon} key={idx} idx={idx} item={item} persons={mainActive} setitems={setitems}></BasicReact>
+            );
+          })}
         </div>
       </div>
-
-
-
-
+      <div>
+        <TotalBox persons={mainActive} partitions={partition} items={items} />
+      </div>
     </div>
-  );
+
+
+
+
+  </div>
+);
 }
 
 export default App;

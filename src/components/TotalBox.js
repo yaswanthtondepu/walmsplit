@@ -3,18 +3,22 @@ import React from 'react'
 const TotalBox = ({ items, persons, partitions }) => {
     console.log("main active")
     console.log(persons)
+    console.log(items)
     const eachprice = {}
     partitions.forEach((partition, idx) => {
         partition.forEach((person) => {
+            var itemprice = parseFloat(items[idx]["price"]) + parseFloat(items[idx]["tax"])
             if (eachprice.hasOwnProperty(person)) {
-                eachprice[person] += parseFloat((parseFloat(items[idx]["price"]) / partition.length).toFixed(4))
+
+                eachprice[person] += parseFloat(( itemprice/ partition.length).toFixed(4))
             }
             else {
-                eachprice[person] = parseFloat((parseFloat(items[idx]["price"]) / partition.length).toFixed(4));
+                eachprice[person] = parseFloat((itemprice / partition.length).toFixed(4))
             }
         })
     });
     let total = 0;
+ 
     for (var key in eachprice) {
         console.log(eachprice[key])
         total += eachprice[key]

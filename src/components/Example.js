@@ -2,7 +2,7 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
 import { useState, useEffect } from "react";
-function BasicExample({ persons, item, totalcallback, total, idx }) {
+function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
   const [active, setactive] = useState([]);
   const [checked, setchecked] = useState(false);
   const [taxable, setTaxable] = useState(false);
@@ -22,6 +22,25 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
   useEffect(() => {
     checked ? setactive([...persons]) : setactive([]);
   }, [checked])
+
+  useEffect(() => {
+    if (taxable) {
+     setitems((items) => {
+        
+        const newitems = [...items];
+        newitems[idx]["tax"] = calculateTax();
+        console.log("hello"+calculateTax())
+        return newitems;
+      });
+    } else {
+      setitems((items) => {
+        const newitems = [...items];
+        newitems[idx]["tax"] = 0;
+        return newitems;
+      });
+      
+    }
+  }, [taxable]);
 
   useEffect(() => {
     if (idx === 0) {
@@ -55,6 +74,11 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
     }
   }, [active]);
 
+  const calculateTax = () => {
+    const tax = parseFloat(item["price"]) * 0.0825;
+    return tax.toFixed(2);
+  }
+
   return item === undefined ? (
     <div></div>
   ) : (
@@ -78,7 +102,7 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
       <Card.Body>
         <Card.Title>{item["name"]}</Card.Title>
         {console.log(item["price"])}
-        <Card.Text>{item["price"]}</Card.Text>
+        <Card.Text>{item["price"]}  {taxable? `+`+ calculateTax():""}</Card.Text>
       </Card.Body>
       <div>
         <div>
