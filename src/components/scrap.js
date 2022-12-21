@@ -60,6 +60,8 @@ function parseHtml(html) {
     item["name"] = $(el).find("span").html().replaceAll(/\s\s+/g, " ");
     item["image"] = $(el).find("a").find("img").attr("src");
     item["price"] = $(el).find(".f5.b.tr").find("span").text().slice(1);
+    console.log("prices")
+    console.log(item["price"])
     items.push(item);
   });
   console.log(items);

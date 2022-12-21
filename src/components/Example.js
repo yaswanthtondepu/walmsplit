@@ -4,24 +4,24 @@ import Card from "react-bootstrap/Card";
 import { useState, useEffect } from "react";
 function BasicExample({ persons, item, totalcallback, total, idx }) {
   const [active, setactive] = useState([]);
-  const [checked,setchecked] = useState(false);
-  const [taxable,settaxable] = useState(false);
-    useEffect(() => {
-    if (checked){
+  const [checked, setchecked] = useState(false);
+  const [taxable, setTaxable] = useState(false);
+  useEffect(() => {
+    if (checked) {
       setactive([...persons])
     }
-    else{
+    else {
       const newactive = active.filter((activeperson) =>
         persons.includes(activeperson)
       );
       setactive([...newactive]);
       console.log("person changed");
     }
-    
+
   }, [persons]);
-  useEffect(()=>{
+  useEffect(() => {
     checked ? setactive([...persons]) : setactive([]);
-  },[checked])
+  }, [checked])
 
   useEffect(() => {
     if (idx === 0) {
@@ -44,12 +44,12 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
       console.log("temp");
       console.log(temp);
       console.log(active);
-      const call = async ()=>{
-        await totalcallback( elem =>{
-           const newarray = [...elem]
-           newarray[idx] = [...active]
-           return newarray
-        } );
+      const call = async () => {
+        await totalcallback(elem => {
+          const newarray = [...elem]
+          newarray[idx] = [...active]
+          return newarray
+        });
       }
       call()
     }
@@ -58,10 +58,26 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
   return item === undefined ? (
     <div></div>
   ) : (
-    <Card style={{ width: "12rem", padding:"1rem" }}>
+    <Card style={{ width: "12rem", padding: "1rem" }}>
+
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems:"center" }}>
+        Tax? &nbsp;
+        <label className="switch switch-small">
+
+          <input
+            onClick={(e) => {
+              setTaxable(e.target.checked);
+
+            }}
+            type="checkbox"
+          />
+          <span className="slider slider-small round"></span>
+        </label>
+      </div>
       <Card.Img variant="top" src={item["image"]} />
       <Card.Body>
         <Card.Title>{item["name"]}</Card.Title>
+        {console.log(item["price"])}
         <Card.Text>{item["price"]}</Card.Text>
       </Card.Body>
       <div>
@@ -70,7 +86,7 @@ function BasicExample({ persons, item, totalcallback, total, idx }) {
             <input
               onClick={(e) => {
                 setchecked(e.target.checked);
-                
+
               }}
               type="checkbox"
             />
@@ -117,4 +133,4 @@ function SearchBar() {
   );
 }
 
-export default BasicExample ;
+export default BasicExample;
