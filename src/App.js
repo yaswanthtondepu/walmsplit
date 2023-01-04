@@ -7,7 +7,7 @@ import BasicReact from "./components/Example";
 import ToggleBox from "./components/ToggleBox";
 import TotalBox from "./components/TotalBox";
 
-const axios = require("axios").default;
+//const axios = require("axios").default;
 // const instance = axios.create({
 //   baseURL: "https://finalspaceapi.com/api/v0/character/?limit=2",
 //   withCredentials: true,
@@ -20,7 +20,7 @@ function App() {
   const [items, setitems] = useState([]);
   const [partition, setpartititon] = useState([])
   useEffect(() => {
-    if (items.length != partition.length){
+    if (items.length !== partition.length){
     console.log("set partition running")
     setpartititon(items.map((item, idx) => {
       return []
@@ -29,7 +29,7 @@ function App() {
 
 
 
-}, [items]);
+  }, [items, partition.length]);
 
 
 

@@ -1,4 +1,4 @@
-import Button from "react-bootstrap/Button";
+//import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
 import { useState, useEffect } from "react";
@@ -6,6 +6,11 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
   const [active, setactive] = useState([]);
   const [checked, setchecked] = useState(false);
   const [taxable, setTaxable] = useState(false);
+
+  const calculateTax = () => {
+    const tax = parseFloat(item["price"]) * 0.0825;
+    return tax.toFixed(2);
+  }
   useEffect(() => {
     if (checked) {
       setactive([...persons])
@@ -18,10 +23,10 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
       console.log("person changed");
     }
 
-  }, [persons]);
+  }, [persons, checked, active]);
   useEffect(() => {
     checked ? setactive([...persons]) : setactive([]);
-  }, [checked])
+  }, [checked,persons])
 
   useEffect(() => {
     if (taxable) {
@@ -40,7 +45,7 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
       });
       
     }
-  }, [taxable]);
+  }, [taxable,idx,calculateTax]);
 
   useEffect(() => {
     if (idx === 0) {
@@ -72,12 +77,9 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
       }
       call()
     }
-  }, [active]);
+  }, [active, total, idx, totalcallback]);
 
-  const calculateTax = () => {
-    const tax = parseFloat(item["price"]) * 0.0825;
-    return tax.toFixed(2);
-  }
+  
 
   return item === undefined ? (
     <div></div>
@@ -149,12 +151,12 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
     </Card>
   );
 }
-function SearchBar() {
-  return (
-    <div>
-      <input></input>{" "}
-    </div>
-  );
-}
+// function SearchBar() {
+//   return (
+//     <div>
+//       <input></input>{" "}
+//     </div>
+//   );
+// }
 
 export default BasicExample;

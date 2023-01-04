@@ -10,7 +10,7 @@ const TotalBox = ({ items, persons, partitions }) => {
             var itemprice = parseFloat(items[idx]["price"]) + parseFloat(items[idx]["tax"])
             if (eachprice.hasOwnProperty(person)) {
 
-                eachprice[person] += parseFloat(( itemprice/ partition.length).toFixed(4))
+                eachprice[person] += parseFloat((itemprice / partition.length).toFixed(4))
             }
             else {
                 eachprice[person] = parseFloat((itemprice / partition.length).toFixed(4))
@@ -18,21 +18,21 @@ const TotalBox = ({ items, persons, partitions }) => {
         })
     });
     let total = 0;
- 
+
     for (var key in eachprice) {
         console.log(eachprice[key])
         total += eachprice[key]
     }
     var itemnames = []
     var itemprices = []
-    for (var key in eachprice) {
-        itemnames.push(key)
-        itemprices.push(eachprice[key])
+    for (var key1 in eachprice) {
+        itemnames.push(key1)
+        itemprices.push(eachprice[key1])
     }
     console.log(itemnames)
     console.log(total)
     return <div
-        style={{ boxShadow: " rgba(0, 0, 0, 0.1) 0px 4px 12px", width: "300px", padding:"1rem" }}>
+        style={{ boxShadow: " rgba(0, 0, 0, 0.1) 0px 4px 12px", width: "300px", padding: "1rem" }}>
 
         {itemnames.map((item, idx) => {
             console.log(itemnames[idx])
