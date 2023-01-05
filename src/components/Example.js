@@ -45,6 +45,7 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
       });
       
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taxable,idx,calculateTax]);
 
   useEffect(() => {
