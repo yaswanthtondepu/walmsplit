@@ -18,7 +18,7 @@ import axios from "axios";
 
 function App() {
   const [persons, setPersons] = useState(["Divya", "Pooja", "Yash", "Maddy", "Bannu", "Sunil", "Sai", "Ramya", "Yaswanth"]);
-  setPersons(["Divya", "Pooja", "Yash", "Maddy", "Bannu", "Sunil", "Sai", "Ramya", "Yaswanth"])
+  console.log(setPersons);
   const [mainActive, setmainActive] = useState([]);
   const [items, setitems] = useState([]);
   const [partition, setpartititon] = useState([])
