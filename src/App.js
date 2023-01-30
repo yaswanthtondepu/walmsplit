@@ -6,6 +6,8 @@ import { useState } from "react";
 import BasicReact from "./components/Example";
 import ToggleBox from "./components/ToggleBox";
 import TotalBox from "./components/TotalBox";
+import Splitwise from "./components/Splitwise";
+import axios from "axios";
 
 //const axios = require("axios").default;
 // const instance = axios.create({
@@ -15,10 +17,13 @@ import TotalBox from "./components/TotalBox";
 // });
 
 function App() {
-  const persons = ["Divya", "Pooja", "Yash", "Maddy", "Bannu", "Sunil", "Sai", "Ramya", "Yaswanth"];
+  const [persons, setPersons] = useState(["Divya", "Pooja", "Yash", "Maddy", "Bannu", "Sunil", "Sai", "Ramya", "Yaswanth"]);
   const [mainActive, setmainActive] = useState([]);
   const [items, setitems] = useState([]);
   const [partition, setpartititon] = useState([])
+  let accessToken = window.location.href.includes('#') ? window.location.href.split("#")[1].split("&")[0].split("=")[1] : undefined;
+  console.log(accessToken);
+  localStorage.setItem("accessToken", accessToken);
   useEffect(() => {
     if (items.length !== partition.length){
     console.log("set partition running")
@@ -31,7 +36,20 @@ function App() {
 
   }, [items, partition.length]);
 
-
+  useEffect(() => {
+    if (accessToken) {
+      axios.get("https://secure.splitwise.com/api/v3.0/get_groups", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+          
+        }
+      }).then((res) => {
+        console.log(res.data.groups);
+      })
+    }
+  }, [accessToken])
 
 return (
   <div>
@@ -54,8 +72,14 @@ return (
         </div>
       </div>
       <div>
-        <TotalBox persons={mainActive} partitions={partition} items={items} />
+       <div>
+          <TotalBox persons={mainActive} partitions={partition} items={items} />
+       </div>
+       <div style={{marginTop:"2rem"}}>
+          {!accessToken && <Splitwise />}
+       </div>
       </div>
+
     </div>
 
 
