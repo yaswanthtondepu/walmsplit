@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-y:hidden;
+
   scroll-behavior: smooth;
 }
 
@@ -14,3 +14,6 @@ code {
     monospace;
 }
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

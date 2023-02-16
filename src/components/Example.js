@@ -15,7 +15,7 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
         persons.includes(activeperson)
       );
       setactive([...newactive]);
-      console.log("person changed");
+
     }
 
   }, [persons]);
@@ -91,7 +91,6 @@ function BasicExample({ persons, item, totalcallback, total, idx, setitems }) {
           <input
             onClick={(e) => {
               setTaxable(e.target.checked);
-
             }}
             type="checkbox"
           />

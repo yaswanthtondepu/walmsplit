@@ -1,35 +1,44 @@
-import React from 'react'
+import React from "react";
 
-const ToggleBox = ({ persons, activecallback, active }) => {
-  return (
-      <div>
-          {persons.map((person) => {
-              return active.includes(person) ? (
-                  <button
-                      value={person}
-                      onClick={(e) =>
-                          activecallback((active) =>
-                              active.filter((value) => value !== e.target.value)
-                          )
-                      }
-                      className="hoverbutton dark"
-                      key={person}
-                  >
-                      {person}
-                  </button>
-              ) : (
-                  <button
-                      value={person}
-                      onClick={(e) => activecallback([...active, e.target.value])}
-                      className="hoverbutton light"
-                      key={person}
-                  >
-                      {person}
-                  </button>
-              );
-          })}
-      </div>
-  )
-}
+const ToggleBox = ({ allPersons, activePersonsHandler, activePersons }) => {
+  const children = [];
 
-export default ToggleBox
+  allPersons.forEach((name, id) => {
+    if (activePersons.includes(id.toString())) {
+      children.push(
+        <button
+          value={id}
+          onClick={(e) =>
+            activePersonsHandler((activepersonids) =>
+              activepersonids.filter((id) => id !== e.target.value)
+            )
+          }
+          className="hoverbutton dark"
+          key={id}
+        >
+          {name}
+        </button>
+      );
+    } else {
+      children.push(
+        <button
+          value={id}
+          onClick={(e) =>
+            activePersonsHandler((activepersonids) => [
+              ...activepersonids,
+              e.target.value,
+            ])
+          }
+          className="hoverbutton light"
+          key={id}
+        >
+          {name}
+        </button>
+      );
+    }
+  });
+
+  return <div className="mt-2">{children}</div>;
+};
+
+export default ToggleBox;

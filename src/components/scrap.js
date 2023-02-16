@@ -21,7 +21,7 @@ const btnStyle = {
   cursor: "pointer",
 }
 
-function Input({ itemcallback }) {
+function Input({ itemsHandler }) {
   const [html, sethtml] = useState("");
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
@@ -35,15 +35,12 @@ function Input({ itemcallback }) {
           placeholder="Paste the HTML here"
         ></textarea>
       </div>
-
       <div>
         <button
           style={btnStyle}
           onClick={(e) => {
             const ans = parseHtml(html);
-            console.log(ans)
-            console.log(itemcallback)
-            itemcallback([...ans])
+            itemsHandler([...ans])
           }}
         >
           Submit
@@ -60,11 +57,8 @@ function parseHtml(html) {
     item["name"] = $(el).find("span").html().replaceAll(/\s\s+/g, " ");
     item["image"] = $(el).find("a").find("img").attr("src");
     item["price"] = $(el).find(".f5.b.tr").find("span").text().slice(1);
-    console.log("prices")
-    console.log(item["price"])
     items.push(item);
   });
-  console.log(items);
   return items
 }
 export default Input;
