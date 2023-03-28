@@ -7,10 +7,12 @@ const TotalBox = ({
   allPersons,
 }) => {
   const tax = 8.25;
+  const individualItems = new Map();
   let totalTax = 0;
   const expenses = new Map();
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
+    individualItems.set(id, []);
   });
 
   personItemList.forEach((Item, idx) => {
@@ -31,6 +33,7 @@ const TotalBox = ({
       if (Item.id.includes(id)) {
         let temp = parseFloat((expenses.get(id) + prices[0]).toFixed(2));
         expenses.set(id, temp);
+        individualItems.get(id).push({ id: idx, price: prices[0] });
         prices.shift();
       }
     });
@@ -43,16 +46,16 @@ const TotalBox = ({
   }
 
   // check if all items are checked
-  function allChecked(){
-    console.log(personItemList)
+  function allChecked() {
+    console.log(personItemList);
     const temp = personItemList.find((item) => {
-      return item["id"].length === 0 ? true : false
-    })
-    if(temp){
-      alert("Please select all items")
+      return item["id"].length === 0 ? true : false;
+    });
+    if (temp) {
+      alert("Please select all items");
     }
   }
-  
+  console.log({ personItemList, expenses, items, individualItems });
 
   // Commit the split to the backend
   function commitSplit() {
@@ -108,7 +111,16 @@ const TotalBox = ({
         <div className="font-bold">{total}</div>
       </div>
 
-      <button onClick={allChecked} className="hoverbutton dark w-full mt-4 ">
+      <button
+        onClick={() => {
+          allChecked()
+          console.log(
+            "comments",
+           
+          );
+        }}
+        className="hoverbutton dark w-full mt-4 "
+      >
         commit split
       </button>
     </div>
@@ -116,8 +128,6 @@ const TotalBox = ({
 };
 
 export default TotalBox;
-
-
 
 // Function to split the price equally
 function splitEqual(price, quantity) {
@@ -135,18 +145,18 @@ function splitEqual(price, quantity) {
   return ans.map((price) => price / 100);
 }
 
-function getIndividualComments(
-  GlobalActivePersonsIds,
-  allPersons,
-  personItemList
-) {
-  const string = `
-    --------------- WalmartExpenseTracker --------------
-    ------------------------------------------ Date ----
-    Common Expenses:
-    ------------------ FirstPerson split ---------------
-    ItemName           splitBetween               Amount
-    
-
-    `;
+function getIndividualComments(allPersons,items, individualItems,expenses) {
+  console.log(expenses)
+  var string = `--------------- WalmartExpenseTracker --------------
+ItemName                                      Amount\n
+`;
+  individualItems.forEach((_, id) => {
+    string += `${allPersons.get(id)} split\n`;
+    individualItems.get(id).forEach((item) => {
+      var name = items[item["id"]].name + " ".repeat(30);
+      string += `${name.slice(0,40)}        ${item["price"]}\n`;
+    });
+    string += " ".repeat(48) + expenses.get(id) + "\n\n";
+  });
+  console.log(string);
 }
