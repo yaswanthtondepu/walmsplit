@@ -1,5 +1,6 @@
 import axios from "axios";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const TotalBox = ({
   GlobalActivePersonsIds,
@@ -9,6 +10,7 @@ const TotalBox = ({
 }) => {
   const tax = 8.25;
   let totalTax = 0;
+  const navigate = useNavigate();
   const expenses = new Map();
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
@@ -108,7 +110,7 @@ const TotalBox = ({
         if (result.status === 200) {
           console.log(result.data);
           alert("Split added successfully. Redirecting to home page");
-          window.location.href = "/";
+          navigate("/");
         }
         else {
           alert("Something went wrong. Please try again later");
@@ -121,7 +123,7 @@ const TotalBox = ({
   }
 
   return (
-    <div className="shadow-lg bg-white p-4" style={{width:"80%"}}>
+    <div className="shadow-lg bg-white p-4" style={{width:"60rem"}}>
       <div className="font-bold mb-4">Overall Expenses</div>
 
       {GlobalActivePersonsIds.map((id) => {

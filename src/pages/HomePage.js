@@ -38,7 +38,7 @@ export const HomePage = () => {
       });
 
     axios
-      .get("http://localhost:3001/get_current_user", {
+      .get(`${process.env.REACT_APP_URL}/get_current_user`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res, err) => {
