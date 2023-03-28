@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 
 const TotalBox = ({
@@ -49,18 +50,25 @@ const TotalBox = ({
       return item["id"].length === 0 ? true : false
     })
     if(temp){
-      alert("Please select all items")
+      let res = prompt("You have not added all the items. Would you still like to continue?(Y/N)");
+      if(res === "Y" || res === "y"){
+        commitSplit();
+      }
+      else{
+        return false;
+      }
     }
   }
   
 
   // Commit the split to the backend
   function commitSplit() {
+    let des = prompt("Please enter a description for the split:");
     const expense = {
       cost: total,
-      description: "Walmart Split",
+      description: des,
       details: "string",
-      date: "2012-05-02T13:00:00Z",
+      date: new Date(),
       repeat_interval: "never",
       currency_code: "USD",
       group_id: 0,
@@ -79,10 +87,41 @@ const TotalBox = ({
     expense["users__{index}__{property}1"] = "string";
     expense["users__{index}__{property}2"] = "string";
     console.log(expense);
+
+    const access_token = localStorage.getItem("access_token")
+      ? localStorage.getItem("access_token")
+      : " ";
+
+    axios({
+      method: 'post',
+      url: `${process.env.REACT_APP_URL}/create_expense`,
+      headers: {
+        'content-type': 'application/json',
+         Authorization: `Bearer ${access_token}` 
+      },
+      data: {
+        expense: expense
+      }
+    })
+      .then(result => {
+        // console.log(result.data);
+        if (result.status === 200) {
+          console.log(result.data);
+          alert("Split added successfully. Redirecting to home page");
+          window.location.href = "/";
+        }
+        else {
+          alert("Something went wrong. Please try again later");
+          return;
+        }
+      })
+      .catch(error => {
+        alert("Something went wrong. Please try again later");
+      });
   }
 
   return (
-    <div className="w-96 shadow-lg bg-white p-4 ">
+    <div className="shadow-lg bg-white p-4" style={{width:"80%"}}>
       <div className="font-bold mb-4">Overall Expenses</div>
 
       {GlobalActivePersonsIds.map((id) => {

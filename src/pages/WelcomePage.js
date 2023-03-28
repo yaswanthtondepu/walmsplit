@@ -1,24 +1,41 @@
 import React from "react";
-import { useEffect, createContext } from "react";
+import { useEffect } from "react";
+import Nav from "../components/Nav";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const WelcomePage = () => {
+
+  const[accessToken,setAccessToken] = useState("");
+
+  useEffect(() => {
+    const access_token = localStorage.getItem("access_token")
+      ? localStorage.getItem("access_token")
+      : "";
+    setAccessToken(access_token);
+  }, [])
+  
   return (
     <div>
-      <div className="bg-white p-4 text-2xl  z-10 top-0  left-0 right-0 text-center bold border-b font-bold">
-        WALMART SPLIT
-      </div>
+      <Nav/>
       <div className="font-bold text-6xl text-center py-80 shadow-lg bg-black text-white ">
         An Easy way to Manage your Expenses
+        <div>
+          {accessToken ?
+          <Link to="/home" className="hoverbutton white ">Get Started</Link>
+          :
+          <a
+            href={
+              "https://secure.splitwise.com/oauth/authorize?response_type=token&client_id=4tGEaqs85zHc7rjbodKXuAG7xuYT4QCpTddEdUtP"
+            }
+            className="hoverbutton white "
+          >
+            {" "}
+            Signin with Splitwise to Get started
+            </a> }
+        </div>
       </div>
-      <a
-        href={
-          "https://secure.splitwise.com/oauth/authorize?response_type=token&client_id=4tGEaqs85zHc7rjbodKXuAG7xuYT4QCpTddEdUtP"
-        }
-        className="hoverbutton dark "
-      >
-        {" "}
-        Signin with Splitwise to Get started
-      </a>
+    
       <div className="font-bold text-6xl text-center py-10 ">Contact Us</div>
 
       <div className="w-3/5 my-40 mx-auto ">

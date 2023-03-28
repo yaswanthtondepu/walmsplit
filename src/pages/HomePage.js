@@ -5,6 +5,7 @@ import ToggleBox from "../components/ToggleBox";
 import { ItemBox } from "../components/ItemBox";
 import TotalBox from "../components/TotalBox";
 import { personitemListContext } from "../App";
+import Nav from "../components/Nav";
 var axios = require("axios");
 
 export const HomePage = () => {
@@ -20,7 +21,7 @@ export const HomePage = () => {
       ? localStorage.getItem("access_token")
       : " ";
     axios
-      .get("http://localhost:3001/get_friends", {
+      .get(`${process.env.REACT_APP_URL}/get_friends`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res, err) => {
@@ -92,15 +93,13 @@ export const HomePage = () => {
   }, [personItemList]);
   return (
     <div>
-      <div className="bg-white p-4 text-2xl sticky z-10 top-0 shadow-md left-0 right-0 text-center bold border-b font-bold">
-        WALMART SPLIT
-      </div>
+      <Nav/>
       <div
         className="flex justify-around  pl-4   "
         style={{ height: "calc(100vh - 3.5rem) " }}
       >
         {" "}
-        <div>
+        <div style={{ height: "calc(100% - 1.5rem) " , overflowY:"auto"}} className="scroll">
           <ToggleBox
             allPersons={allPersons}
             activePersonsHandler={setGlobalActivePersonsIds}

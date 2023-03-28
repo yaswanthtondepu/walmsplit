@@ -5,6 +5,10 @@ const textArea = {
   width: "100%",
   resize: "none",
   outline: "none",
+  border: "1px solid black",
+  borderRadius: "5px",
+  padding: "0.5rem",
+  height: "10rem",
 }
 
 const btnStyle = {
@@ -37,7 +41,8 @@ function Input({ itemsHandler }) {
       </div>
       <div>
         <button
-          style={btnStyle}
+          // style={btnStyle}
+          className="hoverbutton dark"
           onClick={(e) => {
             const ans = parseHtml(html);
             itemsHandler([...ans])
