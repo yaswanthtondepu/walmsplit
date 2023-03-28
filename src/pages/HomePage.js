@@ -96,10 +96,10 @@ export const HomePage = () => {
       <Nav/>
       <div
         className="flex justify-around  pl-4   "
-        style={{ height: "calc(100vh - 3.5rem) " }}
+        // style={{ height: "calc(100vh - 3.5rem) " }}
       >
         {" "}
-        <div style={{ height: "calc(100% - 1.5rem) " , overflowY:"auto"}} className="scroll">
+        <div style={{ height: "calc(100vh - 81px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
           <ToggleBox
             allPersons={allPersons}
             activePersonsHandler={setGlobalActivePersonsIds}
