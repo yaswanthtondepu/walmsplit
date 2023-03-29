@@ -196,5 +196,7 @@ ItemName                                      Amount\n
     });
     string += " ".repeat(48) + expenses.get(id) + "\n\n";
   });
-  console.log(string);
+  console.log(string);  
+  return string;
+
 }
