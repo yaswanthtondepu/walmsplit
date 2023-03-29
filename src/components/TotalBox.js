@@ -10,8 +10,10 @@ const TotalBox = ({
   const tax = 8.25;
   let totalTax = 0;
   const expenses = new Map();
+  const individualItems = new Map();
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
+    individualItems.set(id, []);
   });
 
   personItemList.forEach((Item, idx) => {
@@ -32,6 +34,7 @@ const TotalBox = ({
       if (Item.id.includes(id)) {
         let temp = parseFloat((expenses.get(id) + prices[0]).toFixed(2));
         expenses.set(id, temp);
+        individualItems.get(id).push({id: idx, price: prices[0]});
         prices.shift();
       }
     });
@@ -44,7 +47,7 @@ const TotalBox = ({
   }
 
   // check if all items are checked
-  function allChecked(){
+  function allChecked(comment){
     console.log(personItemList)
     const temp = personItemList.find((item) => {
       return item["id"].length === 0 ? true : false
@@ -52,22 +55,27 @@ const TotalBox = ({
     if(temp){
       let res = prompt("You have not added all the items. Would you still like to continue?(Y/N)");
       if(res === "Y" || res === "y"){
-        commitSplit();
+        commitSplit(comment);
       }
       else{
         return false;
       }
     }
+    else{
+      commitSplit(comment);
+    }
+
   }
   
 
   // Commit the split to the backend
-  function commitSplit() {
+  function commitSplit(comment) {
+   
     let des = prompt("Please enter a description for the split:");
     const expense = {
       cost: total,
       description: des,
-      details: "string",
+      details: comment,
       date: new Date(),
       repeat_interval: "never",
       currency_code: "USD",
@@ -147,7 +155,7 @@ const TotalBox = ({
         <div className="font-bold">{total}</div>
       </div>
 
-      <button onClick={allChecked} className="hoverbutton dark w-full mt-4 ">
+      <button onClick={()=>{ const comment = getIndividualComments(expenses, individualItems, allPersons, items);allChecked(comment);}} className="hoverbutton dark w-full mt-4 ">
         commit split
       </button>
     </div>
@@ -174,18 +182,19 @@ function splitEqual(price, quantity) {
   return ans.map((price) => price / 100);
 }
 
-function getIndividualComments(
-  GlobalActivePersonsIds,
-  allPersons,
-  personItemList
-) {
-  const string = `
-    --------------- WalmartExpenseTracker --------------
-    ------------------------------------------ Date ----
-    Common Expenses:
-    ------------------ FirstPerson split ---------------
-    ItemName           splitBetween               Amount
-    
-
-    `;
+function getIndividualComments(expenses, individualItems, allPersons,items) {
+  console.log(expenses);
+  var string = `--------------- WalmartExpenseTracker --------------
+ItemName                                                             Amount\n
+`;
+  individualItems.forEach((_, id) => {
+    string += `${allPersons.get(id)} split\n`;
+    individualItems.get(id).forEach((item) => {
+      var name = items[item["id"]].name + " ".repeat(30);
+      string += `${name.slice(0, 30)}             ${item["price"]}\n`;
+    });
+    string += " ".repeat(90) + expenses.get(id) + "\n\n";
+  });
+  console.log(string)
+  return string
 }
