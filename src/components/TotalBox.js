@@ -183,7 +183,7 @@ function splitEqual(price, quantity) {
   return ans.map((price) => price / 100);
 }
 
-function getIndividualComments(allPersons, items, individualItems, expenses) {
+function getIndividualComments(expenses, individualItems, allPersons, items) {
   console.log(expenses)
   var string = `--------------- WalmartExpenseTracker --------------
 ItemName                                      Amount\n
