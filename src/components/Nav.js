@@ -47,8 +47,12 @@ const Nav = () => {
                 <Link to="/" style={{ textDecoration: "none", color: "black", paddingLeft:"5rem" }} className="text-2xl bold font-bold"> WALMART SPLIT</Link>
             </div>
             {currentUser &&
-                <div onMouseEnter={showPopupFn} onMouseLeave={hidePopup} style={{ cursor: "pointer" }}> <div className='font-semibold'>{currentUser.name }</div>
-                {showPopup && <div style={{ position: "absolute", background:"white", padding:"1rem", zIndex:"10", right:"0px" }} className="shadow-md"> <div onClick={Logout} >
+                <div onMouseEnter={showPopupFn} onMouseLeave={hidePopup} style={{ cursor: "pointer" }}>
+                <div style={{display:"flex", gap:"0.5rem", alignItems:"center"}}>
+                        <div style={{ backgroundColor: "black", color: "white", borderRadius: "50%", height: "40px", width: "40px", display: "flex", justifyContent: "center", alignItems: "center"}}>{currentUser?.name?.slice(0,1) }</div>
+                    <div className='font-semibold'>Howdy, {currentUser.name }</div>
+                </div>
+                {showPopup && <div style={{ position: "absolute", background:"white", padding:"1rem", zIndex:"10", right:"0px", fontSize:"22px" }} className="shadow-md"> <div onClick={Logout} >
                     <button className="hoverbutton dark ">Logout from Splitwise</button>
                     </div></div>}</div>
             }
