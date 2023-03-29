@@ -16,6 +16,7 @@ const TotalBox = ({
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
   });
+  console.log({personItemList});
 
   personItemList.forEach((Item, idx) => {
     const itemprice =
@@ -24,7 +25,7 @@ const TotalBox = ({
     totalTax += Item.tax ? parseFloat(items[idx].price) * (tax / 100) : 0;
     console.log(idx, itemprice.toFixed(2));
     console.log(expenses);
-    const prices = splitEqual(parseFloat(itemprice.toFixed(2)), Item.id.length);
+    const prices = splitEqual(parseFloat(itemprice.toFixed(2)), Item?.id?.length);
     console.log(prices);
     const sortedExpenses = new Map(
       [...expenses.entries()].sort((a, b) => a[1] - b[1])
