@@ -11,7 +11,6 @@ const TotalBox = ({
   const individualItems = new Map();
   let totalTax = 0;
   const expenses = new Map();
-  const individualItems = new Map();
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
   });
