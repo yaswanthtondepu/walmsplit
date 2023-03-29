@@ -15,6 +15,7 @@ const TotalBox = ({
   const expenses = new Map();
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
+    individualItems.set(id, []);
   });
   console.log({personItemList});
 
@@ -30,7 +31,7 @@ const TotalBox = ({
     const sortedExpenses = new Map(
       [...expenses.entries()].sort((a, b) => a[1] - b[1])
     );
-    console.log(sortedExpenses);
+    console.log({sortedExpenses});
     sortedExpenses.forEach((value, id) => {
       console.log(value, id);
       if (Item.id.includes(id)) {
