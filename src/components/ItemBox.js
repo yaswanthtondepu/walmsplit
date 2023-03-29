@@ -9,7 +9,7 @@ export const ItemBox = ({ GlobalActivePersonsIds,items,setItems,allPersons,perso
   useEffect(() => {
     console.log(personItemList)
     if (items.length !== personItemList.length){
-    const newpersonItemList = items.map((item) => { return {"tax":false,"ids":[]}   });
+    const newpersonItemList = items.map((item) => { return {"tax":false,"id":[]}   });
     setPersonItemList(newpersonItemList);}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
