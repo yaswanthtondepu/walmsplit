@@ -1,5 +1,6 @@
 import axios from "axios";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const TotalBox = ({
   GlobalActivePersonsIds,
@@ -8,13 +9,13 @@ const TotalBox = ({
   allPersons,
 }) => {
   const tax = 8.25;
-  const individualItems = new Map();
   let totalTax = 0;
+  const navigate = useNavigate();
   const expenses = new Map();
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
   });
-  
+
   personItemList.forEach((Item, idx) => {
     const itemprice =
       parseFloat(items[idx].price) +
@@ -33,7 +34,6 @@ const TotalBox = ({
       if (Item.id.includes(id)) {
         let temp = parseFloat((expenses.get(id) + prices[0]).toFixed(2));
         expenses.set(id, temp);
-        individualItems.get(id).push({ id: idx, price: prices[0] });
         prices.shift();
       }
     });
@@ -46,26 +46,30 @@ const TotalBox = ({
   }
 
   // check if all items are checked
-  function allChecked() {
-    console.log(personItemList);
+  function allChecked(){
+    console.log(personItemList)
     const temp = personItemList.find((item) => {
-      return item["id"].length === 0 ? true : false;
-    });
-    if (temp) {
-      alert("Please select all items");
+      return item["id"].length === 0 ? true : false
+    })
+    if(temp){
+      let res = prompt("You have not added all the items. Would you still like to continue?(Y/N)");
+      if(res === "Y" || res === "y"){
+        commitSplit();
+      }
+      else{
+        return false;
+      }
     }
-
   }
-  console.log({ personItemList, expenses, items, individualItems });
+  
 
   // Commit the split to the backend
-  function commitSplit(comment) {
-   
+  function commitSplit() {
     let des = prompt("Please enter a description for the split:");
     const expense = {
       cost: total,
       description: des,
-      details: comment,
+      details: "string",
       date: new Date(),
       repeat_interval: "never",
       currency_code: "USD",
@@ -106,7 +110,7 @@ const TotalBox = ({
         if (result.status === 200) {
           console.log(result.data);
           alert("Split added successfully. Redirecting to home page");
-          window.location.href = "/";
+          navigate("/");
         }
         else {
           alert("Something went wrong. Please try again later");
@@ -119,7 +123,7 @@ const TotalBox = ({
   }
 
   return (
-    <div className="shadow-lg bg-white p-4" style={{width:"80%"}}>
+    <div className="shadow-lg bg-white p-4" style={{flexBasis:"18%"}}>
       <div className="font-bold mb-4">Overall Expenses</div>
 
       {GlobalActivePersonsIds.map((id) => {
@@ -145,16 +149,7 @@ const TotalBox = ({
         <div className="font-bold">{total}</div>
       </div>
 
-      <button
-        onClick={() => {
-          allChecked()
-          console.log(
-            "comments",
-           
-          );
-        }}
-        className="hoverbutton dark w-full mt-4 "
-      >
+      <button onClick={allChecked} className="hoverbutton dark w-full mt-4 ">
         commit split
       </button>
     </div>
@@ -181,18 +176,18 @@ function splitEqual(price, quantity) {
   return ans.map((price) => price / 100);
 }
 
-function getIndividualComments(allPersons,items, individualItems,expenses) {
-  console.log(expenses)
-  var string = `--------------- WalmartExpenseTracker --------------
-ItemName                                      Amount\n
-`;
-  individualItems.forEach((_, id) => {
-    string += `${allPersons.get(id)} split\n`;
-    individualItems.get(id).forEach((item) => {
-      var name = items[item["id"]].name + " ".repeat(30);
-      string += `${name.slice(0,40)}        ${item["price"]}\n`;
-    });
-    string += " ".repeat(48) + expenses.get(id) + "\n\n";
-  });
-  console.log(string);
+function getIndividualComments(
+  GlobalActivePersonsIds,
+  allPersons,
+  personItemList
+) {
+  const string = `
+    --------------- WalmartExpenseTracker --------------
+    ------------------------------------------ Date ----
+    Common Expenses:
+    ------------------ FirstPerson split ---------------
+    ItemName           splitBetween               Amount
+    
+
+    `;
 }
