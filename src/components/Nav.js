@@ -46,7 +46,7 @@ const Nav = () => {
             <div style={{ flex: 2, display: 'flex', justifyContent: "center", alignItems: "center" }}>
                 <Link to="/" style={{ textDecoration: "none", color: "black", paddingLeft:"5rem" }} className="text-2xl bold font-bold"> WALMART SPLIT</Link>
             </div>
-            {currentUser &&
+            {currentUser && accessToken &&
                 <div onMouseEnter={showPopupFn} onMouseLeave={hidePopup} style={{ cursor: "pointer" }}>
                 <div style={{display:"flex", gap:"0.5rem", alignItems:"center"}}>
                         <div style={{ backgroundColor: "black", color: "white", borderRadius: "50%", height: "40px", width: "40px", display: "flex", justifyContent: "center", alignItems: "center"}}>{currentUser?.name?.slice(0,1) }</div>
