@@ -9,7 +9,7 @@ const Protected = ({ children }) => {
    else{
      const routeParams = window.location.href.split("#")[1];
      const token = routeParams?.split("&")[0].split("=");
-     if (!token || token[0] !== "access_token" || token[1] == "") {
+     if (!token || token[0] !== "access_token" || token[1] === "") {
         console.log("Login Unsuccessful")
        alert("Login Unsuccessful");
        return <Navigate to="/" replace />;

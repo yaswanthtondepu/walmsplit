@@ -1,10 +1,8 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect } from "react";
 import ToggleBox from "../components/ToggleBox";
 import { ItemBox } from "../components/ItemBox";
 import TotalBox from "../components/TotalBox";
-import { personitemListContext } from "../App";
 import Nav from "../components/Nav";
 var axios = require("axios");
 
@@ -28,7 +26,7 @@ export const HomePage = () => {
         if (res) {
           setAllPersons((persons) => {
             const newpersons = new Map(persons);
-            res.data.map((person) => {
+            res.data.forEach((person) => {
               newpersons.set(person.id.toString(), person.name);
             });
             return newpersons;
@@ -54,6 +52,7 @@ export const HomePage = () => {
   }, []);
 
   useEffect(() => {
+    
     const tax = 8.25;
     let totalTax = 0;
     const expenses = new Map();
@@ -90,6 +89,7 @@ export const HomePage = () => {
     if (array.length > 0) {
       console.log(array.reduce((a, b) => a + b, 0).toFixed(2));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [personItemList]);
   return (
     <div>

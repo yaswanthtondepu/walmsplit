@@ -1,15 +1,10 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import { personitemListContext } from "../App";
-
 import { useState, useEffect } from "react";
 export const Item = ({
   item,
   GlobalActivePersonsIds,
   value,
   allPersons,
-  personItemList,
   setPersonItemList,
 }) => {
   const [taxable, setTaxable] = useState(false);
@@ -37,11 +32,13 @@ export const Item = ({
       newpersonItemList[value] = { tax: taxable, id: [...localActivePersons] };
       return newpersonItemList;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localActivePersons, taxable]);
 
   /// Check if all persons are active
   useEffect(() => {
     checkIfAllAreActive();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localActivePersons]);
 
   useEffect(() => {
@@ -62,6 +59,7 @@ export const Item = ({
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [GlobalActivePersonsIds]);
 
   return (
@@ -69,7 +67,7 @@ export const Item = ({
       {item ? (
         <div className="border-solid border flex items-center p-4  shadow-md rounded-md gap-3 ">
           <div className="">
-            <img className="w-20 h-20 " src={item["image"]} />
+            <img className="w-20 h-20 " src={item["image"]} alt="" />
           </div>
           <div className="w-full">
             <div>

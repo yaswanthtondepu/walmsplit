@@ -1,12 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect, createContext } from "react";
+import { createContext } from "react";
 import { HomePage } from "./pages/HomePage";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
-import ToggleBox from "./components/ToggleBox";
-import TotalBox from "./components/TotalBox";
-import { ItemBox } from "./components/ItemBox";
 import { WelcomePage } from "./pages/WelcomePage";
 import Protected from "./Routes/Protected";
 

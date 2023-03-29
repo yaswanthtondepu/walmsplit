@@ -11,19 +11,19 @@ const textArea = {
   height: "10rem",
 }
 
-const btnStyle = {
-  width: "100%",
-  height: "2rem",
-  marginTop: "1rem",
-  outline: "none",
-  border: "none",
-  borderRadius: "0.5rem",
-  backgroundColor: "#2596be",
-  color: "white",
-  fontSize: "1rem",
-  fontWeight: "bold",
-  cursor: "pointer",
-}
+// const btnStyle = {
+//   width: "100%",
+//   height: "2rem",
+//   marginTop: "1rem",
+//   outline: "none",
+//   border: "none",
+//   borderRadius: "0.5rem",
+//   backgroundColor: "#2596be",
+//   color: "white",
+//   fontSize: "1rem",
+//   fontWeight: "bold",
+//   cursor: "pointer",
+// }
 
 function Input({ itemsHandler }) {
   const [html, sethtml] = useState("");
