@@ -14,10 +14,14 @@ export const WelcomePage = () => {
       : "";
     setAccessToken(access_token);
   }, [])
+
+  function onLogutClick () {
+    setAccessToken("");
+  }
   
   return (
     <div>
-      <Nav/>
+      <Nav onLogutClick={onLogutClick}/>
       <div className="font-bold text-6xl text-center py-80 shadow-lg bg-black text-white ">
         An Easy way to Manage your Expenses
         <div>
@@ -26,7 +30,7 @@ export const WelcomePage = () => {
           :
           <a
             href={
-              "https://secure.splitwise.com/oauth/authorize?response_type=token&client_id=4tGEaqs85zHc7rjbodKXuAG7xuYT4QCpTddEdUtP"
+                `https://secure.splitwise.com/oauth/authorize?response_type=token&client_id=${process.env.REACT_APP_SPLITWISE_API_TOKEN}`
             }
             className="hoverbutton white "
           >
