@@ -123,7 +123,7 @@ export const HomePage = () => {
       setFilteredPersons(allPersons);
     }
     
-  }, [searchPerson]);
+  }, [searchPerson, allPersons]);
   return (
     <div>
       <Nav/>
