@@ -1,5 +1,5 @@
 import axios from "axios";
-import React from "react";
+import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 const TotalBox = ({
@@ -9,6 +9,7 @@ const TotalBox = ({
   allPersons,
 }) => {
   const tax = 8.25;
+  const [splitDescription, setSplitDescription] = useState("");
   const individualItems = new Map();
   let totalTax = 0;
   const navigate = useNavigate();
@@ -18,7 +19,6 @@ const TotalBox = ({
     individualItems.set(id, []);
   });
   console.log({personItemList});
-
   personItemList.forEach((Item, idx) => {
     const itemprice =
       parseFloat(items[idx].price) +
@@ -56,9 +56,9 @@ const TotalBox = ({
       return item["id"].length === 0 ? true : false
     })
     if (temp) {
-      let res = prompt("You have not added all the items. Would you still like to continue?(Y/N)");
+      let res = prompt("Not all items are selected. Do you want to continue? (Y/N)");
       if (res === "Y" || res === "y") {
-        commitSplit();
+        commitSplit(comment);
       }
       else {
         return false;
@@ -72,7 +72,7 @@ const TotalBox = ({
 
   // Commit the split to the backend
   function commitSplit(comment) {
-    let des = prompt("Please enter a description for the split:");
+    let des = splitDescription;
     const expense = {
       cost: total,
       description: des,
@@ -132,7 +132,6 @@ const TotalBox = ({
   return (
     <div className="shadow-lg bg-white p-4" style={{ flexBasis: "18%" }}>
       <div className="font-bold mb-4">Overall Expenses</div>
-
       {GlobalActivePersonsIds.map((id) => {
         console.log(allPersons);
         return (
@@ -156,9 +155,13 @@ const TotalBox = ({
         <div className="font-bold">{total}</div>
       </div>
 
-      <button onClick={() => { const comment = getIndividualComments(expenses, individualItems, allPersons, items); allChecked(comment); }} className="hoverbutton dark w-full mt-4 ">
-        Commit Split
-      </button>
+      {total > 0 && <input type="text" style={{ border: "1px solid black" }} className="rounded-md h-10 pl-2 mt-4 w-full focus:outline-none" placeholder="Description" onChange={(e) => {setSplitDescription(e.target.value)}} /> }
+
+      {total > 0 && !splitDescription && <div className="text-sm mt-2 ml-2 text-red-400">Please enter the description</div>}
+
+      {total > 0 && splitDescription && <button onClick={() => { const comment = getIndividualComments(expenses, individualItems, allPersons, items); allChecked(comment); }} className="hoverbutton dark w-full mt-4 ">
+        Add to Splitwise
+      </button>}
     </div>
   );
 };

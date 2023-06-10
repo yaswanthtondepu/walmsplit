@@ -5,7 +5,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 
-const Nav = () => {
+const Nav = ({ onLogutClick }) => {
     const [accessToken, setAccessToken] = useState("");
     const [currentUser, setCurrentUser] = useState({});
     const [showPopup, setShowPopup] = useState(false);
@@ -38,6 +38,11 @@ const Nav = () => {
             });
     }, [accessToken])
     const Logout = () => {
+        if (onLogutClick){
+            onLogutClick();
+        }
+        setCurrentUser({})
+        setAccessToken("")
         localStorage.clear()
         navigate("/");
     }

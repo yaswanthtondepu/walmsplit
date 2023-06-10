@@ -4,10 +4,13 @@ import ToggleBox from "../components/ToggleBox";
 import { ItemBox } from "../components/ItemBox";
 import TotalBox from "../components/TotalBox";
 import Nav from "../components/Nav";
+import Search from "../components/Search";
 var axios = require("axios");
 
 export const HomePage = () => {
   const [allPersons, setAllPersons] = useState(new Map());
+  const [filteredPersons, setFilteredPersons] = useState(new Map());
+  const [searchPerson, setSearchPerson] = useState("");
   // stores id of all active persons
   const [GlobalActivePersonsIds, setGlobalActivePersonsIds] = useState([]);
   const [personItemList, setPersonItemList] = useState([]);
@@ -31,6 +34,13 @@ export const HomePage = () => {
             });
             return newpersons;
           });
+          setFilteredPersons((persons) => {
+            const newpersons = new Map(persons);
+            res.data.forEach((person) => {
+              newpersons.set(person.id.toString(), person.name);
+            });
+            return newpersons;
+          });
         }
         if (err) console.log(err);
       });
@@ -46,6 +56,12 @@ export const HomePage = () => {
             newpersons.set(res.data.id.toString(), res.data.name);
             return newpersons;
           });
+          setFilteredPersons((persons) => {
+            const newpersons = new Map(persons);
+            newpersons.set(res.data.id.toString(), res.data.name);
+            return newpersons;
+          });
+         
         }
         if (err) console.log(err);
       });
@@ -91,17 +107,35 @@ export const HomePage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [personItemList]);
+
+  // for search
+  useEffect(() => {
+    if (searchPerson){
+      const filtered = new Map();
+      allPersons.forEach((name, id) => {
+        if (name.toLowerCase().includes(searchPerson.toLowerCase())) {
+          filtered.set(id, name);
+        }
+      });
+      setFilteredPersons(filtered);
+    }
+    else{
+      setFilteredPersons(allPersons);
+    }
+    
+  }, [searchPerson]);
   return (
     <div>
       <Nav/>
       <div
-        className="flex justify-around  pl-4   "
+        className="flex justify-around  pl-4"
         // style={{ height: "calc(100vh - 3.5rem) " }}
       >
         {" "}
         <div style={{ height: "calc(100vh - 81px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
+          <Search setSearchPerson={setSearchPerson}/>
           <ToggleBox
-            allPersons={allPersons}
+            allPersons={filteredPersons}
             activePersonsHandler={setGlobalActivePersonsIds}
             activePersons={GlobalActivePersonsIds}
           ></ToggleBox>
