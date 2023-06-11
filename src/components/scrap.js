@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 const cheerio = require("cheerio");
 
 const textArea = {
@@ -11,26 +11,30 @@ const textArea = {
   height: "10rem",
 }
 
-// const btnStyle = {
-//   width: "100%",
-//   height: "2rem",
-//   marginTop: "1rem",
-//   outline: "none",
-//   border: "none",
-//   borderRadius: "0.5rem",
-//   backgroundColor: "#2596be",
-//   color: "white",
-//   fontSize: "1rem",
-//   fontWeight: "bold",
-//   cursor: "pointer",
-// }
-
 function Input({ itemsHandler }) {
   const [html, sethtml] = useState("");
+  const textAreaRef = useRef(); 
+
+  useEffect(() => {
+    // Function to handle input events
+    const handleInput = () => {
+      const newHtml = textAreaRef.current.value;
+      sethtml(newHtml);
+    };
+
+    // Attach the event listener
+    const el = textAreaRef.current;
+    el.addEventListener('input', handleInput);
+
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => el.removeEventListener('input', handleInput);
+  }, []);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
       <div style={{ width: "90%", marginTop: "2rem" }}>
         <textarea
+          ref={textAreaRef}
           value={html}
           onChange={(e) => sethtml(e.target.value)}
           style={textArea}
@@ -43,6 +47,7 @@ function Input({ itemsHandler }) {
         <button
           // style={btnStyle}
           className="hoverbutton dark"
+          id="submit-html-btn"
           onClick={(e) => {
             const ans = parseHtml(html);
             itemsHandler([...ans])
