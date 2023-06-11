@@ -40,7 +40,7 @@ export const WelcomePage = () => {
         </div>
       </div>
     
-      <div className="font-bold text-6xl text-center py-10 ">Contact Us</div>
+      {/* <div className="font-bold text-6xl text-center py-10 ">Contact Us</div>
 
       <div className="w-3/5 my-40 mx-auto ">
         <label className="pl-2 font-semibold ">Name</label>
@@ -53,7 +53,7 @@ export const WelcomePage = () => {
           {" "}
           Submit{" "}
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
