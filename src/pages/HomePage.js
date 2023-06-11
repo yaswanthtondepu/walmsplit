@@ -132,7 +132,7 @@ export const HomePage = () => {
         // style={{ height: "calc(100vh - 3.5rem) " }}
       >
         {" "}
-        <div style={{ height: "calc(100vh - 81px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
+        <div style={{ height: "calc(100vh - 95px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
           <Search setSearchPerson={setSearchPerson}/>
           <ToggleBox
             allPersons={filteredPersons}
