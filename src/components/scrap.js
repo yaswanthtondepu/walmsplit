@@ -13,7 +13,7 @@ const textArea = {
 
 function Input({ itemsHandler }) {
   const [html, sethtml] = useState("");
-  const textAreaRef = useRef(); 
+  const textAreaRef = useRef();
 
   useEffect(() => {
     // Function to handle input events
@@ -34,6 +34,7 @@ function Input({ itemsHandler }) {
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
       <div style={{ width: "90%", marginTop: "2rem" }}>
         <textarea
+          id="html-input"
           ref={textAreaRef}
           value={html}
           onChange={(e) => sethtml(e.target.value)}
