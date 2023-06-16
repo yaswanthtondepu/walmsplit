@@ -8,6 +8,9 @@ import Search from "../components/Search";
 import { ThreeDots } from 'react-loader-spinner'
 var axios = require("axios");
 
+
+
+
 export const HomePage = () => {
   const [allPersons, setAllPersons] = useState(new Map());
   const [filteredPersons, setFilteredPersons] = useState(new Map());
@@ -17,13 +20,39 @@ export const HomePage = () => {
   const [personItemList, setPersonItemList] = useState([]);
   const [items, setItems] = useState([]);
   const [showLoader, setShowLoader] = useState(false);
-  console.log({ GlobalActivePersonsIds });
+  const [groups, setGroups] = useState([]);
+  const [showGroups, setShowGroups] = useState(false);
+  const access_token = localStorage.getItem("access_token")
+    ? localStorage.getItem("access_token")
+    : " ";
   //to get query params
   useEffect(() => {
+    getFriends();
+    axios
+      .get(`${process.env.REACT_APP_URL}/get_current_user`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res, err) => {
+        if (res) {
+          setAllPersons((persons) => {
+            const newpersons = new Map(persons);
+            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+            return newpersons;
+          });
+          setFilteredPersons((persons) => {
+            const newpersons = new Map(persons);
+            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+            return newpersons;
+          });
+
+        }
+        if (err) console.log(err);
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [access_token]);
+
+  const getFriends = () => {
     setShowLoader(true);
-    const access_token = localStorage.getItem("access_token")
-      ? localStorage.getItem("access_token")
-      : " ";
     axios
       .get(`${process.env.REACT_APP_URL}/get_friends`, {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -52,30 +81,30 @@ export const HomePage = () => {
         setShowLoader(false);
       });
 
+  };
+
+  const getGroups = () => {
+    setShowLoader(true);
     axios
-      .get(`${process.env.REACT_APP_URL}/get_current_user`, {
+      .get(`${process.env.REACT_APP_URL}/get_groups`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res, err) => {
         if (res) {
-          setAllPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name);
-            return newpersons;
-          });
-          setFilteredPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name);
-            return newpersons;
-          });
-         
+          setGroups(res.data);
         }
-        if (err) console.log(err);
+        if (err) { console.log(err); };
+        setShowLoader(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setShowLoader(false);
       });
-  }, []);
+
+  };
 
   useEffect(() => {
-    
+
     const tax = 8.25;
     let totalTax = 0;
     const expenses = new Map();
@@ -117,7 +146,7 @@ export const HomePage = () => {
 
   // for search
   useEffect(() => {
-    if (searchPerson){
+    if (searchPerson) {
       const filtered = new Map();
       allPersons.forEach((name, id) => {
         if (name.toLowerCase().includes(searchPerson.toLowerCase())) {
@@ -126,27 +155,69 @@ export const HomePage = () => {
       });
       setFilteredPersons(filtered);
     }
-    else{
+    else {
       setFilteredPersons(allPersons);
     }
-    
+
   }, [searchPerson, allPersons]);
 
   const clearSearchHandler = () => {
-    if(searchPerson){
+    if (searchPerson) {
       setSearchPerson("");
     }
   }
+  const handleSelectChange = (e) => {
+    if (e.target.value === "friends") {
+      getFriends();
+      setShowGroups(false);
+    } else {
+      getGroups();
+      setAllPersons(new Map());
+      setFilteredPersons(new Map());
+      setShowGroups(true);
+    }
+  };
+
+  const handleGroupSelectChange = (e) => {
+    const group = groups.find((group) => group.id === parseInt(e.target.value));
+    console.log(group);
+    const persons = new Map();
+    group.members.forEach((member) => {
+      persons.set(member.id.toString(), member.name);
+    });
+    setAllPersons(persons);
+    setFilteredPersons(persons);
+  };
   return (
     <div>
-      <Nav/>
+      <Nav />
       <div
         className="flex justify-around  pl-4"
-        // style={{ height: "calc(100vh - 3.5rem) " }}
+      // style={{ height: "calc(100vh - 3.5rem) " }}
       >
         {" "}
         <div style={{ height: "calc(100vh - 95px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
-          <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson}/>
+          <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} />
+
+          <div className="mt-3 mb-3">
+            <select title="" onChange={handleSelectChange}
+              style={{ border: "1px solid black", borderRadius: "5px", width: "250px", cursor: "pointer", padding: "5px 10px" }}>
+              <option value="friends">Friends</option>
+              <option value="groups">Groups</option>
+            </select>
+          </div>
+
+          {showGroups && <div className="mt-3 mb-3">
+            <select title="groups" onChange={handleGroupSelectChange}
+              defaultValue={0}
+              style={{ border: "1px solid black", borderRadius: "5px", width: "250px", cursor: "pointer", padding: "5px 10px" }}>
+              <option key={0} value={0} disabled  >Select Group</option>
+              {groups.map(group =>
+                <option key={group.id} value={group.id}>{group.name}</option>
+              )};
+            </select>
+          </div>}
+
           <ThreeDots
             height="80"
             width="80"
@@ -160,7 +231,7 @@ export const HomePage = () => {
             allPersons={filteredPersons}
             activePersonsHandler={setGlobalActivePersonsIds}
             activePersons={GlobalActivePersonsIds}
-            clearSearchHandler = {clearSearchHandler}
+            clearSearchHandler={clearSearchHandler}
           ></ToggleBox>
           <ItemBox
             items={items}
