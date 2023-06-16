@@ -28,27 +28,7 @@ export const HomePage = () => {
   //to get query params
   useEffect(() => {
     getFriends();
-    axios
-      .get(`${process.env.REACT_APP_URL}/get_current_user`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res, err) => {
-        if (res) {
-          setAllPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
-            return newpersons;
-          });
-          setFilteredPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
-            return newpersons;
-          });
-
-        }
-        if (err) console.log(err);
-      });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+          // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [access_token]);
 
   const getFriends = () => {
@@ -81,6 +61,26 @@ export const HomePage = () => {
         setShowLoader(false);
       });
 
+    axios
+      .get(`${process.env.REACT_APP_URL}/get_current_user`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res, err) => {
+        if (res) {
+          setAllPersons((persons) => {
+            const newpersons = new Map(persons);
+            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+            return newpersons;
+          });
+          setFilteredPersons((persons) => {
+            const newpersons = new Map(persons);
+            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+            return newpersons;
+          });
+
+        }
+        if (err) console.log(err);
+      });
   };
 
   const getGroups = () => {
