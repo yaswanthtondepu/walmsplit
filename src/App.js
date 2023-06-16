@@ -1,4 +1,4 @@
-imt "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { createContext } from "react";
 import { HomePage } from "./pages/HomePage";
 import "./App.css";
