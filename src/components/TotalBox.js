@@ -133,7 +133,7 @@ const TotalBox = ({
     <div className="shadow-lg bg-white p-4" style={{ flexBasis: "18%" }}>
       <div className="font-bold mb-4">Overall Expenses</div>
       {GlobalActivePersonsIds.map((id) => {
-        console.log(allPersons);
+        // console.log(allPersons);
         return (
           <div key={id} className="flex">
             {" "}
