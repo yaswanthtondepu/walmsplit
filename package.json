@@ -1,6 +1,6 @@
 {
   "name": "walmart-split",
-  "version": "2.12",
+  "version": "2.2",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
