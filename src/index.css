@@ -5,7 +5,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
   scroll-behavior: smooth;
 }
 
@@ -15,8 +14,8 @@ code {
 }
 
 body::-webkit-scrollbar, .scroll::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 5px;
 }
 body::-webkit-scrollbar-track, .scroll::-webkit-scrollbar-track {
     border-radius: 10px;

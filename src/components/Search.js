@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Search = ({ setSearchPerson }) => {
+const Search = ({ setSearchPerson, searchPerson }) => {
 
     function handleSearchChange(e) {
         setSearchPerson(e.target.value);
@@ -11,7 +11,8 @@ const Search = ({ setSearchPerson }) => {
                 <input type="text" placeholder="Search"
                     style={{ border: "1px solid black" }}
                     className="rounded-md w-1/2 h-10 pl-2 focus:outline-none"
-                    onChange={handleSearchChange} />
+                    onChange={handleSearchChange}
+                    value={searchPerson} />
             </div>
         </>
     )

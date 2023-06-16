@@ -18,6 +18,11 @@ export const WelcomePage = () => {
   function onLogutClick () {
     setAccessToken("");
   }
+
+  function submitContactUsForm(e) {
+    e.preventDefault();
+    alert("Sorry, this feature is not available yet.");
+  }
   
   return (
     <div>
@@ -40,20 +45,22 @@ export const WelcomePage = () => {
         </div>
       </div>
     
-      {/* <div className="font-bold text-6xl text-center py-10 ">Contact Us</div>
+      <div className="font-bold text-6xl text-center py-10 ">Contact Us</div>
 
       <div className="w-3/5 my-40 mx-auto ">
-        <label className="pl-2 font-semibold ">Name</label>
-        <input className=" border w-full h-10 rounded-md mb-3 pl-2 " />
-        <label className="pl-2 font-semibold">Email address</label>
-        <input className=" border w-full h-10 rounded-md mb-3 pl-2" />
-        <label className="pl-2 font-semibold"> Describe Your Suggestion </label>
-        <textarea className=" border  resize-none w-full h-40 rounded-md mb-3 pl-2 pt-2" />
-        <button className="bg-black text-white w-full p-2 mt-4 rounded-md font-semibold outline-none hover:bg-white ">
-          {" "}
-          Submit{" "}
-        </button>
-      </div> */}
+        <form onSubmit={submitContactUsForm}>
+          <label className="pl-2 font-semibold ">Name</label>
+          <input type="text" placeholder="Name" title="name" className=" border w-full h-10 rounded-md mb-3 pl-2 " />
+          <label className="pl-2 font-semibold">Email address</label>
+          <input type="email" title="email" placeholder="Email" className=" border w-full h-10 rounded-md mb-3 pl-2" />
+          <label className="pl-2 font-semibold"> Describe Your Suggestion </label>
+          <textarea title="suggestion" placeholder="Please enter your suggestion here" className=" border  resize-none w-full h-40 rounded-md mb-3 pl-2 pt-2" />
+          <button type="submit" className="bg-black text-white p-2 w-full mt-4 rounded-md font-semibold outline-none hover:bg-white ">
+            {" "}
+            Submit{" "}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

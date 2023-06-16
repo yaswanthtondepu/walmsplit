@@ -5,6 +5,7 @@ import { ItemBox } from "../components/ItemBox";
 import TotalBox from "../components/TotalBox";
 import Nav from "../components/Nav";
 import Search from "../components/Search";
+import { ThreeDots } from 'react-loader-spinner'
 var axios = require("axios");
 
 export const HomePage = () => {
@@ -15,9 +16,11 @@ export const HomePage = () => {
   const [GlobalActivePersonsIds, setGlobalActivePersonsIds] = useState([]);
   const [personItemList, setPersonItemList] = useState([]);
   const [items, setItems] = useState([]);
+  const [showLoader, setShowLoader] = useState(false);
   console.log({ GlobalActivePersonsIds });
   //to get query params
   useEffect(() => {
+    setShowLoader(true);
     const access_token = localStorage.getItem("access_token")
       ? localStorage.getItem("access_token")
       : " ";
@@ -41,8 +44,12 @@ export const HomePage = () => {
             });
             return newpersons;
           });
+          setShowLoader(false);
         }
-        if (err) console.log(err);
+        if (err) { console.log(err); setShowLoader(false); };
+      })
+      .catch((err) => {
+        setShowLoader(false);
       });
 
     axios
@@ -124,6 +131,12 @@ export const HomePage = () => {
     }
     
   }, [searchPerson, allPersons]);
+
+  const clearSearchHandler = () => {
+    if(searchPerson){
+      setSearchPerson("");
+    }
+  }
   return (
     <div>
       <Nav/>
@@ -133,11 +146,21 @@ export const HomePage = () => {
       >
         {" "}
         <div style={{ height: "calc(100vh - 95px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
-          <Search setSearchPerson={setSearchPerson}/>
+          <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson}/>
+          <ThreeDots
+            height="80"
+            width="80"
+            radius="9"
+            color="#000"
+            wrapperStyle={{}}
+            wrapperClassName=""
+            visible={showLoader}
+          />
           <ToggleBox
             allPersons={filteredPersons}
             activePersonsHandler={setGlobalActivePersonsIds}
             activePersons={GlobalActivePersonsIds}
+            clearSearchHandler = {clearSearchHandler}
           ></ToggleBox>
           <ItemBox
             items={items}
