@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-const cheerio = require("cheerio");
+import { useState, useEffect, useRef , lazy} from "react";
+const cheerio = lazy(() => require("cheerio"));
 
 const textArea = {
   width: "100%",
