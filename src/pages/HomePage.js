@@ -6,10 +6,8 @@ import TotalBox from "../components/TotalBox";
 import Nav from "../components/Nav";
 import Search from "../components/Search";
 import { ThreeDots } from 'react-loader-spinner'
+import Select from 'react-select'
 var axios = require("axios");
-
-
-
 
 export const HomePage = () => {
   const [allPersons, setAllPersons] = useState(new Map());
@@ -22,68 +20,73 @@ export const HomePage = () => {
   const [showLoader, setShowLoader] = useState(false);
   const [groups, setGroups] = useState([]);
   const [showGroups, setShowGroups] = useState(false);
+  const [groupsSelectOptions, setGroupsSelectOptions] = useState([]);
+  const fgSelect = [{ value: "friends", label: "Friends" }, { value: "groups", label: "Groups" }]
   const access_token = localStorage.getItem("access_token")
     ? localStorage.getItem("access_token")
     : " ";
   //to get query params
   useEffect(() => {
     getFriends();
-          // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [access_token]);
 
   const getFriends = () => {
-    setShowLoader(true);
-    axios
-      .get(`${process.env.REACT_APP_URL}/get_friends`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res, err) => {
-        if (res) {
-          setAllPersons((persons) => {
-            const newpersons = new Map(persons);
-            res.data.forEach((person) => {
-              newpersons.set(person.id.toString(), person.name);
+    if (allPersons.size === 0) {
+      setShowLoader(true);
+      axios
+        .get(`${process.env.REACT_APP_URL}/get_friends`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res, err) => {
+          if (res) {
+            setAllPersons((persons) => {
+              const newpersons = new Map(persons);
+              res.data.forEach((person) => {
+                newpersons.set(person.id.toString(), person.name);
+              });
+              return newpersons;
             });
-            return newpersons;
-          });
-          setFilteredPersons((persons) => {
-            const newpersons = new Map(persons);
-            res.data.forEach((person) => {
-              newpersons.set(person.id.toString(), person.name);
+            setFilteredPersons((persons) => {
+              const newpersons = new Map(persons);
+              res.data.forEach((person) => {
+                newpersons.set(person.id.toString(), person.name);
+              });
+              return newpersons;
             });
-            return newpersons;
-          });
+            setShowLoader(false);
+          }
+          if (err) { console.log(err); setShowLoader(false); };
+        })
+        .catch((err) => {
           setShowLoader(false);
-        }
-        if (err) { console.log(err); setShowLoader(false); };
-      })
-      .catch((err) => {
-        setShowLoader(false);
-      });
+        });
 
-    axios
-      .get(`${process.env.REACT_APP_URL}/get_current_user`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res, err) => {
-        if (res) {
-          setAllPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
-            return newpersons;
-          });
-          setFilteredPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
-            return newpersons;
-          });
+      axios
+        .get(`${process.env.REACT_APP_URL}/get_current_user`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res, err) => {
+          if (res) {
+            setAllPersons((persons) => {
+              const newpersons = new Map(persons);
+              newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+              return newpersons;
+            });
+            setFilteredPersons((persons) => {
+              const newpersons = new Map(persons);
+              newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+              return newpersons;
+            });
 
-        }
-        if (err) console.log(err);
-      });
+          }
+          if (err) console.log(err);
+        });
+    }
   };
 
   const getGroups = () => {
+    if(groups.length!==0) return;
     setShowLoader(true);
     axios
       .get(`${process.env.REACT_APP_URL}/get_groups`, {
@@ -92,6 +95,10 @@ export const HomePage = () => {
       .then((res, err) => {
         if (res) {
           setGroups(res.data);
+          const options = res.data.map((group) => {
+            return { value: group.id, label: group.name }
+          })
+          setGroupsSelectOptions(options);
         }
         if (err) { console.log(err); };
         setShowLoader(false);
@@ -167,25 +174,25 @@ export const HomePage = () => {
     }
   }
   const handleSelectChange = (e) => {
-    if (e.target.value === "friends") {
-      getFriends();
+    if (e.value === "friends") {
+      setFilteredPersons(allPersons);
       setShowGroups(false);
     } else {
       getGroups();
-      setAllPersons(new Map());
+      // setAllPersons(new Map());
       setFilteredPersons(new Map());
       setShowGroups(true);
     }
   };
 
   const handleGroupSelectChange = (e) => {
-    const group = groups.find((group) => group.id === parseInt(e.target.value));
+    const group = groups.find((group) => group.id === parseInt(e.value));
     console.log(group);
     const persons = new Map();
     group.members.forEach((member) => {
       persons.set(member.id.toString(), member.name);
     });
-    setAllPersons(persons);
+    // setAllPersons(persons);
     setFilteredPersons(persons);
   };
   return (
@@ -199,23 +206,62 @@ export const HomePage = () => {
         <div style={{ height: "calc(100vh - 95px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
           <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} />
 
+        {GlobalActivePersonsIds.length>0 && <div className="mt-3 mb-3">
+            <div><h6>Selected Persons:</h6> </div>
+            <div className="max-h-28 overflow-y-auto ">
+              {GlobalActivePersonsIds.map(id =>
+                <span key={id} className="hoverbutton light">{allPersons.get(id.toString())}</span>
+              )}
+            </div>
+          </div>}
+
           <div className="mt-3 mb-3">
-            <select title="" onChange={handleSelectChange}
+            {/* <select title="" onChange={handleSelectChange}
               style={{ border: "1px solid black", borderRadius: "5px", width: "250px", cursor: "pointer", padding: "5px 10px" }}>
               <option value="friends">Friends</option>
               <option value="groups">Groups</option>
-            </select>
+            </select> */}
+
+            <Select options={fgSelect}
+              onChange={handleSelectChange}
+              isSearchable={false}
+              defaultValue={fgSelect[0]}
+              placeholder="Friends / Groups"
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  borderColor: 'black',
+                  width: "250px",
+                  cursor: "pointer",
+                  outline: "none"
+                }),
+              }} />
           </div>
 
           {showGroups && <div className="mt-3 mb-3">
-            <select title="groups" onChange={handleGroupSelectChange}
+            {/* <select title="groups" onChange={handleGroupSelectChange}
               defaultValue={0}
               style={{ border: "1px solid black", borderRadius: "5px", width: "250px", cursor: "pointer", padding: "5px 10px" }}>
               <option key={0} value={0} disabled  >Select Group</option>
               {groups.map(group =>
                 <option key={group.id} value={group.id}>{group.name}</option>
               )};
-            </select>
+            </select> */}
+
+            <Select options={groupsSelectOptions}
+              onChange={handleGroupSelectChange}
+              isSearchable={true}
+              placeholder="Select a Group"
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  borderColor: 'black',
+                  width: "250px",
+                  cursor: "pointer",
+                  outline: "none"
+                }),
+              }}
+            />
           </div>}
 
           <ThreeDots
