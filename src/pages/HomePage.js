@@ -7,8 +7,9 @@ import Nav from "../components/Nav";
 import Search from "../components/Search";
 import { ThreeDots } from 'react-loader-spinner'
 import Select from 'react-select'
-var axios = require("axios");
 
+
+var axios = require("axios");
 export const HomePage = () => {
   const [allPersons, setAllPersons] = useState(new Map());
   const [filteredPersons, setFilteredPersons] = useState(new Map());
@@ -21,6 +22,9 @@ export const HomePage = () => {
   const [groups, setGroups] = useState([]);
   const [showGroups, setShowGroups] = useState(false);
   const [groupsSelectOptions, setGroupsSelectOptions] = useState([]);
+  const [payerSelectOptions, setPayerSelectOptions] = useState([]);
+  const [payer, setPayer] = useState({});
+  const [taxPercentage, setTaxPercentage] = useState(8.25);
   const fgSelect = [{ value: "friends", label: "Friends" }, { value: "groups", label: "Groups" }]
   const access_token = localStorage.getItem("access_token")
     ? localStorage.getItem("access_token")
@@ -85,8 +89,28 @@ export const HomePage = () => {
     }
   };
 
+  useEffect(() => {
+    if (!payer.value && GlobalActivePersonsIds.length > 0) {
+      setPayer({ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) })
+    }
+
+    let options = GlobalActivePersonsIds.map((id) => {
+      return { value: id, label: allPersons.get(id.toString()) }
+    })
+    setPayerSelectOptions(options);
+    if (payer.value && !GlobalActivePersonsIds.includes(payer.value)) {
+      if (GlobalActivePersonsIds.length > 0) {
+        setPayer({ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) })
+      } else {
+        setPayer({})
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [GlobalActivePersonsIds, allPersons])
+
+
   const getGroups = () => {
-    if(groups.length!==0) return;
+    if (groups.length !== 0) return;
     setShowLoader(true);
     axios
       .get(`${process.env.REACT_APP_URL}/get_groups`, {
@@ -112,7 +136,8 @@ export const HomePage = () => {
 
   useEffect(() => {
 
-    const tax = 8.25;
+    const tax = taxPercentage ? parseFloat(taxPercentage) : 0;
+    console.log(tax);
     let totalTax = 0;
     const expenses = new Map();
     GlobalActivePersonsIds.forEach((id) => {
@@ -149,7 +174,7 @@ export const HomePage = () => {
       console.log(array.reduce((a, b) => a + b, 0).toFixed(2));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [personItemList]);
+  }, [personItemList, taxPercentage]);
 
   // for search
   useEffect(() => {
@@ -195,6 +220,10 @@ export const HomePage = () => {
     // setAllPersons(persons);
     setFilteredPersons(persons);
   };
+
+  const handlePayerSelectChange = (e) => {
+    setPayer(e);
+  };
   return (
     <div>
       <Nav />
@@ -204,9 +233,30 @@ export const HomePage = () => {
       >
         {" "}
         <div style={{ height: "calc(100vh - 95px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
-          <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} />
+          <div className="flex flex-col md:flex-row">
+            <div className="grow"> <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} /></div>
+            <div className="flex-none mt-3">
+              <span className="pr-5" ><strong>Tax:</strong></span>
+              <input type="number"
+                placeholder="Tax percentage"
+                className="rounded-md w-3/4 md:w-1/2 h-10 pl-2 focus:outline-none"
+                style={{ border: "1px solid black" }}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  if (value < 0) {
+                    value = 0;
+                  }
+                  if (value > 100) {
+                    value = 100;
+                  }
+                  setTaxPercentage(value)
+                }
+                }
+                value={taxPercentage} />
+            </div>
+          </div>
 
-        {GlobalActivePersonsIds.length>0 && <div className="mt-3 mb-3">
+          {GlobalActivePersonsIds.length > 0 && <div className="mt-3 mb-3">
             <div><h6>Selected Persons:</h6> </div>
             <div className="max-h-28 overflow-y-auto ">
               {GlobalActivePersonsIds.map(id =>
@@ -215,13 +265,27 @@ export const HomePage = () => {
             </div>
           </div>}
 
-          <div className="mt-3 mb-3">
-            {/* <select title="" onChange={handleSelectChange}
-              style={{ border: "1px solid black", borderRadius: "5px", width: "250px", cursor: "pointer", padding: "5px 10px" }}>
-              <option value="friends">Friends</option>
-              <option value="groups">Groups</option>
-            </select> */}
+          {GlobalActivePersonsIds.length > 0 && <div className="mt-3 mb-3">
+            <span><strong>Who Paid?</strong></span>
+            <Select options={payerSelectOptions}
+              onChange={handlePayerSelectChange}
+              isSearchable={true}
+              isClearable={false}
+              defaultValue={payer}
+              value={payer}
+              placeholder="Select Payer"
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  borderColor: 'black',
+                  width: "250px",
+                  cursor: "pointer",
+                  outline: "none",
+                }),
+              }} />
+          </div>}
 
+          <div className="mt-3 mb-3">
             <Select options={fgSelect}
               onChange={handleSelectChange}
               isSearchable={false}
@@ -236,6 +300,7 @@ export const HomePage = () => {
                   outline: "none"
                 }),
               }} />
+
           </div>
 
           {showGroups && <div className="mt-3 mb-3">
@@ -293,6 +358,8 @@ export const HomePage = () => {
           personItemList={personItemList}
           items={items}
           allPersons={allPersons}
+          payer={payer}
+          taxPercentage={taxPercentage}
         />
       </div>
     </div>
