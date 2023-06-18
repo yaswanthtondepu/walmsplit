@@ -7,8 +7,10 @@ const TotalBox = ({
   personItemList,
   items,
   allPersons,
+  payer,
+  taxPercentage
 }) => {
-  const tax = 8.25;
+  const tax = taxPercentage? taxPercentage : 0;
   const [splitDescription, setSplitDescription] = useState("");
   const individualItems = new Map();
   let totalTax = 0;
@@ -82,10 +84,10 @@ const TotalBox = ({
       currency_code: "USD",
       group_id: 0,
     };
-    expense[`users__${0}__user_id`] = GlobalActivePersonsIds[0];
+    expense[`users__${0}__user_id`] = payer.value;
     expense[`users__${0}__paid_share`] = total;
     expense[`users__${0}__owed_share`] = expenses.get(
-      GlobalActivePersonsIds[0]
+      payer.value
     );
     GlobalActivePersonsIds.forEach((id, idx) => {
       if (idx === 0) return;
