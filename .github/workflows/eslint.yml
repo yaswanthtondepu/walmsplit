@@ -1,0 +1,35 @@
+name: ESLint Check
+
+on:
+  push:
+    branches:
+      - main # Modify this if your main branch has a different name
+
+jobs:
+  eslint-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npx eslint .
+
+      - name: Check ESLint output
+        run: |
+          eslint_output=$(npx eslint --format=unix .)
+          if [ -n "$eslint_output" ]; then
+            echo "::error::ESLint found warnings. Please fix the issues before committing."
+            exit 1
+          else
+            echo "No ESLint warnings found. Proceeding with the commit."
+          fi
