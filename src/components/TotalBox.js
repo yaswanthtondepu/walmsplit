@@ -20,22 +20,22 @@ const TotalBox = ({
     expenses.set(id, 0);
     individualItems.set(id, []);
   });
-  console.log({personItemList});
+  // console.log({personItemList});
   personItemList.forEach((Item, idx) => {
     const itemprice =
       parseFloat(items[idx].price) +
       (Item.tax ? parseFloat(items[idx].price) * (tax / 100) : 0);
     totalTax += Item.tax ? parseFloat(items[idx].price) * (tax / 100) : 0;
-    console.log(idx, itemprice.toFixed(2));
-    console.log(expenses);
+    // console.log(idx, itemprice.toFixed(2));
+    // console.log(expenses);
     const prices = splitEqual(parseFloat(itemprice.toFixed(2)), Item?.id?.length);
-    console.log(prices);
+    // console.log(prices);
     const sortedExpenses = new Map(
       [...expenses.entries()].sort((a, b) => a[1] - b[1])
     );
-    console.log({sortedExpenses});
+    // console.log({sortedExpenses});
     sortedExpenses.forEach((value, id) => {
-      console.log(value, id);
+      // console.log(value, id);
       if (Item.id.includes(id)) {
         let temp = parseFloat((expenses.get(id) + prices[0]).toFixed(2));
         expenses.set(id, temp);
@@ -53,9 +53,6 @@ const TotalBox = ({
 
   // check if all items are checked
   function allChecked(comment) {
-    console.log(GlobalActivePersonsIds);
-    console.log(payer.value);
-    console.log(personItemList)
     const temp = personItemList.find((item) => {
       return item["id"].length === 0 ? true : false
     })
@@ -99,7 +96,6 @@ const TotalBox = ({
     });
     expense["users__{index}__{property}1"] = "string";
     expense["users__{index}__{property}2"] = "string";
-    console.log(expense);
 
     const access_token = localStorage.getItem("access_token")
       ? localStorage.getItem("access_token")
@@ -119,7 +115,7 @@ const TotalBox = ({
       .then(result => {
         // console.log(result.data);
         if (result.status === 200) {
-          console.log(result.data);
+          // console.log(result.data);
           alert("Split added successfully. Redirecting to home page");
           navigate("/");
         }
@@ -191,7 +187,7 @@ function splitEqual(price, quantity) {
 }
 
 function getIndividualComments(expenses, individualItems, allPersons, items) {
-  console.log(expenses)
+  // console.log(expenses)
   var string = `--------------- WalmartExpenseTracker --------------
 ItemName                                      Amount\n
 `;
@@ -203,7 +199,7 @@ ItemName                                      Amount\n
     });
     string += " ".repeat(48) + expenses.get(id) + "\n\n";
   });
-  console.log(string);  
+  // console.log(string);  
   return string;
 
 }
