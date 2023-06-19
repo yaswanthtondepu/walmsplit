@@ -172,7 +172,6 @@ export const HomePage = () => {
       setShowGroups(false);
     } else {
       getGroups();
-      setAllPersons(new Map());
       setFilteredPersons(new Map());
       setShowGroups(true);
     }
