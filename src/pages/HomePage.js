@@ -6,11 +6,10 @@ import TotalBox from "../components/TotalBox";
 import Nav from "../components/Nav";
 import Search from "../components/Search";
 import { ThreeDots } from 'react-loader-spinner'
+import Select from 'react-select'
+
+
 var axios = require("axios");
-
-
-
-
 export const HomePage = () => {
   const [allPersons, setAllPersons] = useState(new Map());
   const [filteredPersons, setFilteredPersons] = useState(new Map());
@@ -22,68 +21,96 @@ export const HomePage = () => {
   const [showLoader, setShowLoader] = useState(false);
   const [groups, setGroups] = useState([]);
   const [showGroups, setShowGroups] = useState(false);
+  const [groupsSelectOptions, setGroupsSelectOptions] = useState([]);
+  const [payerSelectOptions, setPayerSelectOptions] = useState([]);
+  const [payer, setPayer] = useState({});
+  const [taxPercentage, setTaxPercentage] = useState(8.25);
+  const fgSelect = [{ value: "friends", label: "Friends" }, { value: "groups", label: "Groups" }]
   const access_token = localStorage.getItem("access_token")
     ? localStorage.getItem("access_token")
     : " ";
   //to get query params
   useEffect(() => {
     getFriends();
-          // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [access_token]);
 
   const getFriends = () => {
-    setShowLoader(true);
-    axios
-      .get(`${process.env.REACT_APP_URL}/get_friends`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res, err) => {
-        if (res) {
-          setAllPersons((persons) => {
-            const newpersons = new Map(persons);
-            res.data.forEach((person) => {
-              newpersons.set(person.id.toString(), person.name);
+    if (allPersons.size === 0) {
+      setShowLoader(true);
+      axios
+        .get(`${process.env.REACT_APP_URL}/get_friends`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res, err) => {
+          if (res) {
+            setAllPersons((persons) => {
+              const newpersons = new Map(persons);
+              res.data.forEach((person) => {
+                newpersons.set(person.id.toString(), person.name);
+              });
+              return newpersons;
             });
-            return newpersons;
-          });
-          setFilteredPersons((persons) => {
-            const newpersons = new Map(persons);
-            res.data.forEach((person) => {
-              newpersons.set(person.id.toString(), person.name);
+            setFilteredPersons((persons) => {
+              const newpersons = new Map(persons);
+              res.data.forEach((person) => {
+                newpersons.set(person.id.toString(), person.name);
+              });
+              return newpersons;
             });
-            return newpersons;
-          });
+            setShowLoader(false);
+          }
+          if (err) { console.log(err); setShowLoader(false); };
+        })
+        .catch((err) => {
           setShowLoader(false);
-        }
-        if (err) { console.log(err); setShowLoader(false); };
-      })
-      .catch((err) => {
-        setShowLoader(false);
-      });
+        });
 
-    axios
-      .get(`${process.env.REACT_APP_URL}/get_current_user`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res, err) => {
-        if (res) {
-          setAllPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
-            return newpersons;
-          });
-          setFilteredPersons((persons) => {
-            const newpersons = new Map(persons);
-            newpersons.set(res.data.id.toString(), res.data.name + " (You)");
-            return newpersons;
-          });
+      axios
+        .get(`${process.env.REACT_APP_URL}/get_current_user`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res, err) => {
+          if (res) {
+            setAllPersons((persons) => {
+              const newpersons = new Map(persons);
+              newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+              return newpersons;
+            });
+            setFilteredPersons((persons) => {
+              const newpersons = new Map(persons);
+              newpersons.set(res.data.id.toString(), res.data.name + " (You)");
+              return newpersons;
+            });
 
-        }
-        if (err) console.log(err);
-      });
+          }
+          if (err) console.log(err);
+        });
+    }
   };
 
+  useEffect(() => {
+    if (!payer.value && GlobalActivePersonsIds.length > 0) {
+      setPayer({ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) })
+    }
+
+    let options = GlobalActivePersonsIds.map((id) => {
+      return { value: id, label: allPersons.get(id.toString()) }
+    })
+    setPayerSelectOptions(options);
+    if (payer.value && !GlobalActivePersonsIds.includes(payer.value)) {
+      if (GlobalActivePersonsIds.length > 0) {
+        setPayer({ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) })
+      } else {
+        setPayer({})
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [GlobalActivePersonsIds, allPersons])
+
+
   const getGroups = () => {
+    if (groups.length !== 0) return;
     setShowLoader(true);
     axios
       .get(`${process.env.REACT_APP_URL}/get_groups`, {
@@ -92,6 +119,10 @@ export const HomePage = () => {
       .then((res, err) => {
         if (res) {
           setGroups(res.data);
+          const options = res.data.map((group) => {
+            return { value: group.id, label: group.name }
+          })
+          setGroupsSelectOptions(options);
         }
         if (err) { console.log(err); };
         setShowLoader(false);
@@ -105,7 +136,8 @@ export const HomePage = () => {
 
   useEffect(() => {
 
-    const tax = 8.25;
+    const tax = taxPercentage ? parseFloat(taxPercentage) : 0;
+    console.log(tax);
     let totalTax = 0;
     const expenses = new Map();
     GlobalActivePersonsIds.forEach((id) => {
@@ -142,7 +174,7 @@ export const HomePage = () => {
       console.log(array.reduce((a, b) => a + b, 0).toFixed(2));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [personItemList]);
+  }, [personItemList, taxPercentage]);
 
   // for search
   useEffect(() => {
@@ -167,25 +199,30 @@ export const HomePage = () => {
     }
   }
   const handleSelectChange = (e) => {
-    if (e.target.value === "friends") {
-      getFriends();
+    if (e.value === "friends") {
+      setFilteredPersons(allPersons);
       setShowGroups(false);
     } else {
       getGroups();
+      // setAllPersons(new Map());
       setFilteredPersons(new Map());
       setShowGroups(true);
     }
   };
 
   const handleGroupSelectChange = (e) => {
-    const group = groups.find((group) => group.id === parseInt(e.target.value));
+    const group = groups.find((group) => group.id === parseInt(e.value));
     console.log(group);
     const persons = new Map();
     group.members.forEach((member) => {
       persons.set(member.id.toString(), member.name);
     });
-    setAllPersons(persons);
+    // setAllPersons(persons);
     setFilteredPersons(persons);
+  };
+
+  const handlePayerSelectChange = (e) => {
+    setPayer(e);
   };
   return (
     <div>
@@ -196,25 +233,100 @@ export const HomePage = () => {
       >
         {" "}
         <div style={{ height: "calc(100vh - 95px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
-          <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} />
+          <div className="flex flex-col md:flex-row">
+            <div className="grow"> <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} /></div>
+            <div className="flex-none mt-3">
+              <span className="pr-5" ><strong>Tax:</strong></span>
+              <input type="number"
+                placeholder="Tax percentage"
+                className="rounded-md w-3/4 md:w-1/2 h-10 pl-2 focus:outline-none"
+                style={{ border: "1px solid black" }}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  if (value < 0) {
+                    value = 0;
+                  }
+                  if (value > 100) {
+                    value = 100;
+                  }
+                  setTaxPercentage(value)
+                }
+                }
+                value={taxPercentage} />
+            </div>
+          </div>
+
+          {GlobalActivePersonsIds.length > 0 && <div className="mt-3 mb-3">
+            <div><h6>Selected Persons:</h6> </div>
+            <div className="max-h-28 overflow-y-auto ">
+              {GlobalActivePersonsIds.map(id =>
+                <span key={id} className="hoverbutton light">{allPersons.get(id.toString())}</span>
+              )}
+            </div>
+          </div>}
+
+          {GlobalActivePersonsIds.length > 0 && <div className="mt-3 mb-3">
+            <span><strong>Who Paid?</strong></span>
+            <Select options={payerSelectOptions}
+              onChange={handlePayerSelectChange}
+              isSearchable={true}
+              isClearable={false}
+              defaultValue={payer}
+              value={payer}
+              placeholder="Select Payer"
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  borderColor: 'black',
+                  width: "250px",
+                  cursor: "pointer",
+                  outline: "none",
+                }),
+              }} />
+          </div>}
 
           <div className="mt-3 mb-3">
-            <select title="" onChange={handleSelectChange}
-              style={{ border: "1px solid black", borderRadius: "5px", width: "250px", cursor: "pointer", padding: "5px 10px" }}>
-              <option value="friends">Friends</option>
-              <option value="groups">Groups</option>
-            </select>
+            <Select options={fgSelect}
+              onChange={handleSelectChange}
+              isSearchable={false}
+              defaultValue={fgSelect[0]}
+              placeholder="Friends / Groups"
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  borderColor: 'black',
+                  width: "250px",
+                  cursor: "pointer",
+                  outline: "none"
+                }),
+              }} />
+
           </div>
 
           {showGroups && <div className="mt-3 mb-3">
-            <select title="groups" onChange={handleGroupSelectChange}
+            {/* <select title="groups" onChange={handleGroupSelectChange}
               defaultValue={0}
               style={{ border: "1px solid black", borderRadius: "5px", width: "250px", cursor: "pointer", padding: "5px 10px" }}>
               <option key={0} value={0} disabled  >Select Group</option>
               {groups.map(group =>
                 <option key={group.id} value={group.id}>{group.name}</option>
               )};
-            </select>
+            </select> */}
+
+            <Select options={groupsSelectOptions}
+              onChange={handleGroupSelectChange}
+              isSearchable={true}
+              placeholder="Select a Group"
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  borderColor: 'black',
+                  width: "250px",
+                  cursor: "pointer",
+                  outline: "none"
+                }),
+              }}
+            />
           </div>}
 
           <ThreeDots
@@ -246,6 +358,8 @@ export const HomePage = () => {
           personItemList={personItemList}
           items={items}
           allPersons={allPersons}
+          payer={payer}
+          taxPercentage={taxPercentage}
         />
       </div>
     </div>
