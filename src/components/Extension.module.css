@@ -1,0 +1,22 @@
+.ext
+{
+    position: absolute;
+    top: 150px;
+    background-color: #fff;
+    color: #000;
+    border-radius: 0 50px 50px 0;
+    padding: 10px;
+    font-size: 1.5rem;
+    width: 350px;
+    animation: widthAnimation 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+
+@keyframes widthAnimation {
+    from {
+        width: 0px;
+    }
+    to {
+        width: 350px;
+    }
+}

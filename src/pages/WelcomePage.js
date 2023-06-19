@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Extension from "../components/Extension";
+
 
 export const WelcomePage = () => {
 
   const [accessToken, setAccessToken] = useState("");
-
+  const [showExtension, setShowExtension] = useState(true);
   const [inputs, setInputs] = useState({
     email: "",
     name: "",
@@ -58,6 +60,9 @@ export const WelcomePage = () => {
     <div>
       <Nav onLogutClick={onLogutClick} />
       <div className="font-bold text-6xl text-center py-80 shadow-lg bg-black text-white ">
+        
+        <Extension showExtension={showExtension} setShowExtension={setShowExtension} />
+        
         An Easy way to Manage your Expenses
         <div>
           {accessToken ?
