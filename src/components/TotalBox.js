@@ -53,6 +53,8 @@ const TotalBox = ({
 
   // check if all items are checked
   function allChecked(comment) {
+    console.log(GlobalActivePersonsIds);
+    console.log(payer.value);
     console.log(personItemList)
     const temp = personItemList.find((item) => {
       return item["id"].length === 0 ? true : false
@@ -84,17 +86,15 @@ const TotalBox = ({
       currency_code: "USD",
       group_id: 0,
     };
-    expense[`users__${0}__user_id`] = payer.value;
-    expense[`users__${0}__paid_share`] = total;
-    expense[`users__${0}__owed_share`] = expenses.get(
-      payer.value
-    );
+    
     GlobalActivePersonsIds.forEach((id, idx) => {
-      if (idx === 0) return;
-      if(id !== payer.value){
-        expense[`users__${idx}__user_id`] = id;
+      expense[`users__${idx}__user_id`] = id;
+      expense[`users__${idx}__owed_share`] = expenses.get(id);
+      if(id.toString() === payer.value.toString()){
+        expense[`users__${idx}__paid_share`] = total;
+      }
+      else{
         expense[`users__${idx}__paid_share`] = 0;
-        expense[`users__${idx}__owed_share`] = expenses.get(id);
       }
     });
     expense["users__{index}__{property}1"] = "string";
