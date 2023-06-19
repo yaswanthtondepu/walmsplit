@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 const cheerio = require("cheerio");
 
 const textArea = {
@@ -9,11 +9,13 @@ const textArea = {
   borderRadius: "5px",
   padding: "0.5rem",
   height: "10rem",
-}
+};
 
 function Input({ itemsHandler }) {
   const [html, sethtml] = useState("");
   const textAreaRef = useRef();
+  const buttonRef = useRef(null);
+  const [isClicked, setIsClicked] = useState(false);
 
   useEffect(() => {
     // Function to handle input events
@@ -24,14 +26,31 @@ function Input({ itemsHandler }) {
 
     // Attach the event listener
     const el = textAreaRef.current;
-    el.addEventListener('input', handleInput);
+    el.addEventListener("input", handleInput);
 
     // Cleanup function to remove the event listener when the component unmounts
-    return () => el.removeEventListener('input', handleInput);
+    return () => el.removeEventListener("input", handleInput);
   }, []);
-
+  useEffect(() => {
+    const walmartPgsource = localStorage.getItem("walmart-page-source");
+    if (walmartPgsource) {
+      sethtml(walmartPgsource);
+      setIsClicked(true);
+    }
+  }, []);
+  useEffect(() => {
+    buttonRef.current.click();
+    localStorage.removeItem("walmart-page-source");
+  },[isClicked]);
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "100%",
+      }}
+    >
       <div style={{ width: "90%", marginTop: "2rem" }}>
         <textarea
           id="html-input"
@@ -47,11 +66,13 @@ function Input({ itemsHandler }) {
       <div>
         <button
           // style={btnStyle}
+          ref={buttonRef}
           className="hoverbutton dark"
           id="submit-html-btn"
           onClick={(e) => {
             const ans = parseHtml(html);
-            itemsHandler([...ans])
+            console.log("button clicked");
+            itemsHandler([...ans]);
           }}
         >
           Submit
@@ -70,6 +91,6 @@ function parseHtml(html) {
     item["price"] = $(el).find(".f5.b.tr").find("span").text().slice(1);
     items.push(item);
   });
-  return items
+  return items;
 }
 export default Input;
