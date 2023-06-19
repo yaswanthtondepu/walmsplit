@@ -91,9 +91,11 @@ const TotalBox = ({
     );
     GlobalActivePersonsIds.forEach((id, idx) => {
       if (idx === 0) return;
-      expense[`users__${idx}__user_id`] = id;
-      expense[`users__${idx}__paid_share`] = 0;
-      expense[`users__${idx}__owed_share`] = expenses.get(id);
+      if(id !== payer.value){
+        expense[`users__${idx}__user_id`] = id;
+        expense[`users__${idx}__paid_share`] = 0;
+        expense[`users__${idx}__owed_share`] = expenses.get(id);
+      }
     });
     expense["users__{index}__{property}1"] = "string";
     expense["users__{index}__{property}2"] = "string";
