@@ -7,6 +7,8 @@ import Nav from "../components/Nav";
 import Search from "../components/Search";
 import { ThreeDots } from 'react-loader-spinner'
 import Select from 'react-select'
+import BackDrop from '../components/BackDrop'
+import PayerShares from "../components/PayerShares";
 
 
 var axios = require("axios");
@@ -23,9 +25,11 @@ export const HomePage = () => {
   const [showGroups, setShowGroups] = useState(false);
   const [groupsSelectOptions, setGroupsSelectOptions] = useState([]);
   const [payerSelectOptions, setPayerSelectOptions] = useState([]);
-  const [payer, setPayer] = useState({});
+  const [payer, setPayer] = useState([]);
   const [taxPercentage, setTaxPercentage] = useState(8.25);
   const fgSelect = [{ value: "friends", label: "Friends" }, { value: "groups", label: "Groups" }]
+  const [payersAndShares, setPayersAndShares] = useState([]);
+  const [showShareModal, setShowShareModal] = useState(false);
   const access_token = localStorage.getItem("access_token")
     ? localStorage.getItem("access_token")
     : " ";
@@ -90,21 +94,28 @@ export const HomePage = () => {
   };
 
   useEffect(() => {
-    if (!payer.value && GlobalActivePersonsIds.length > 0) {
-      setPayer({ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) })
+    if (payer.length > 0 && GlobalActivePersonsIds.length > 0) {
+      setPayer([{ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) }])
     }
 
     let options = GlobalActivePersonsIds.map((id) => {
       return { value: id, label: allPersons.get(id.toString()) }
     })
     setPayerSelectOptions(options);
-    if (payer.value && !GlobalActivePersonsIds.includes(payer.value)) {
-      if (GlobalActivePersonsIds.length > 0) {
-        setPayer({ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) })
-      } else {
-        setPayer({})
-      }
+
+    //remove payerIds not in GlobalActivePersonsIds
+
+    // console.log(newPayer);
+    console.log(payer);
+    console.log(payer.length, GlobalActivePersonsIds.length);
+    if (payer.length === 0 && GlobalActivePersonsIds.length > 0) {
+      setPayer([{ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0].toString()) }])
     }
+    else if (payer.length > 0 && GlobalActivePersonsIds.length > 0) {
+      let newPayer = payer.filter((p) => GlobalActivePersonsIds.includes(p.value))
+      setPayer(newPayer)
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [GlobalActivePersonsIds, allPersons])
 
@@ -221,8 +232,32 @@ export const HomePage = () => {
     setFilteredPersons(persons);
   };
 
+  useEffect(() => {
+
+    // payersAndShare = [{id:number, share:number}]
+    //payer = [{value:number, label:string}]
+    //check payersAndShares: remove the ones not in payer
+    let newPayersAndShares = payersAndShares.filter((p) => payer.map((p) => p.value).includes(p.id))
+    //check payersAndShares: add the ones that are not in payersAndShares from payer
+    payer.forEach((p) => {
+      if (!payersAndShares.map((p) => p.id).includes(p.value)) {
+        newPayersAndShares.push({ id: p.value, share: 0.0 })
+      }
+    })
+    console.log(newPayersAndShares);
+    //set payersAndShares
+    setPayersAndShares(newPayersAndShares)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payer])
+
   const handlePayerSelectChange = (e) => {
-    setPayer(e);
+    if (e.length === 0 && GlobalActivePersonsIds.length > 0) {
+      setPayer([{ value: GlobalActivePersonsIds[0], label: allPersons.get(GlobalActivePersonsIds[0]) }])
+    }
+    else {
+      setPayer(e)
+    }
   };
   return (
     <div>
@@ -234,7 +269,18 @@ export const HomePage = () => {
         {" "}
         <div style={{ height: "calc(100vh - 95px) ", overflowY: "auto", flexBasis: "82%" }} className="scroll">
           <div className="flex flex-col md:flex-row">
-            <div className="grow"> <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} /></div>
+            <div className="grow">
+              <Search setSearchPerson={setSearchPerson} searchPerson={searchPerson} />
+            </div>
+            {showShareModal && <div>
+              <div onClick={() => {setShowShareModal(false)}}>
+                <BackDrop/>
+              </div>
+              <PayerShares payer={payer}
+                payersAndShares={payersAndShares}
+                setPayersAndShares={setPayersAndShares}
+                setShowShareModal={setShowShareModal} />
+            </div>}
             <div className="flex-none mt-3">
               <span className="pr-5" ><strong>Tax:</strong></span>
               <input type="number"
@@ -257,33 +303,52 @@ export const HomePage = () => {
           </div>
 
           {GlobalActivePersonsIds.length > 0 && <div className="mt-3 mb-3">
-            <div><h6>Selected Persons:</h6> </div>
-            <div className="max-h-28 overflow-y-auto ">
+            <div><h6>Persons in split:</h6> </div>
+            <div className="max-h-28 overflow-y-auto">
               {GlobalActivePersonsIds.map(id =>
                 <span key={id} className="hoverbutton light">{allPersons.get(id.toString())}</span>
               )}
             </div>
           </div>}
 
-          {GlobalActivePersonsIds.length > 0 && <div className="mt-3 mb-3">
-            <span><strong>Who Paid?</strong></span>
-            <Select options={payerSelectOptions}
-              onChange={handlePayerSelectChange}
-              isSearchable={true}
-              isClearable={false}
-              defaultValue={payer}
-              value={payer}
-              placeholder="Select Payer"
-              styles={{
-                control: (baseStyles, state) => ({
-                  ...baseStyles,
-                  borderColor: 'black',
-                  width: "250px",
-                  cursor: "pointer",
-                  outline: "none",
-                }),
-              }} />
-          </div>}
+          {GlobalActivePersonsIds.length > 0 &&
+            <div className="flex flex-col">
+              <div className="mt-3 mb-3">
+                <span><strong>Who Paid?</strong></span>
+                <Select options={payerSelectOptions}
+                  onChange={handlePayerSelectChange}
+                  isSearchable={true}
+                  isClearable={false}
+                  isMulti={true}
+                  defaultValue={[...payer]}
+                  value={[...payer]}
+                  placeholder="Select Payer"
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      borderColor: 'black',
+                      width: "300px",
+                      cursor: "pointer",
+                      outline: "none",
+                    }),
+                  }} />
+
+                {payer.length > 1 && <div>
+                  <button className="hoverbutton dark" onClick={() => setShowShareModal(true)}>Set Shares</button>
+                </div>}
+              </div>
+
+              <div>
+                {payer.length > 1 && <div className="mt-3 mb-3">
+                  <div><h6>Shares:</h6> </div>
+                  <div className="max-h-28 overflow-y-auto ">
+                    {payersAndShares.map((p) =>
+                      <span key={p.id} className="hoverbutton light">{allPersons.get(p.id.toString())} : {p.share}</span>
+                    )}
+                  </div>
+                  </div>}
+              </div>
+            </div>}
 
           <div className="mt-3 mb-3">
             <Select options={fgSelect}
@@ -358,8 +423,8 @@ export const HomePage = () => {
           personItemList={personItemList}
           items={items}
           allPersons={allPersons}
-          payer={payer}
           taxPercentage={taxPercentage}
+          payersAndShares={payersAndShares}
         />
       </div>
     </div>
