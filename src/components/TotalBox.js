@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 const TotalBox = ({
@@ -7,15 +7,18 @@ const TotalBox = ({
   personItemList,
   items,
   allPersons,
-  payer,
-  taxPercentage
+  taxPercentage,
+  payersAndShares
 }) => {
   const tax = taxPercentage? taxPercentage : 0;
   const [splitDescription, setSplitDescription] = useState("");
+  const [finalPayersAndShares, setFinalPayersAndShares] = useState(JSON.parse(JSON.stringify(payersAndShares)));
+  const [splitAllowed, setSplitAllowed] = useState(false);
   const individualItems = new Map();
   let totalTax = 0;
   const navigate = useNavigate();
   const expenses = new Map();
+  
   GlobalActivePersonsIds.forEach((id) => {
     expenses.set(id, 0);
     individualItems.set(id, []);
@@ -51,6 +54,35 @@ const TotalBox = ({
     total = individualExpenses.reduce((a, b) => a + b, 0).toFixed(2);
   }
 
+  useEffect(() => {
+    if(payersAndShares.length === 1) {
+      let tempId = payersAndShares[0].id;
+      let tempShare = total;
+      setFinalPayersAndShares([{id: tempId, share: tempShare}]);
+    }
+    else{
+      setFinalPayersAndShares(payersAndShares);
+    }
+  }, [payersAndShares, total])
+
+  useEffect(() => {
+    //find total of shares
+    let totalShare = 0.0;
+    finalPayersAndShares.forEach((item) => {
+      console.log(item.share);
+      totalShare += parseFloat(item.share);
+    })
+    console.log(parseFloat(totalShare).toFixed(2), parseFloat(total));
+    console.log(finalPayersAndShares.length);
+    if (parseFloat(totalShare).toFixed(2).toString() === parseFloat(total).toFixed(2).toString() && finalPayersAndShares.length >= 1){
+      console.log("split allowed");
+      setSplitAllowed(true);
+    }
+    else{
+      setSplitAllowed(false);
+    }
+  }, [finalPayersAndShares, total])
+
   // check if all items are checked
   function allChecked(comment) {
     const temp = personItemList.find((item) => {
@@ -73,6 +105,11 @@ const TotalBox = ({
 
   // Commit the split to the backend
   function commitSplit(comment) {
+    if(!splitAllowed)
+    {
+      alert("Please check the split shares. The total shares should be equal to the total amount");
+      return;
+    }
     let des = splitDescription;
     const expense = {
       cost: total,
@@ -87,8 +124,12 @@ const TotalBox = ({
     GlobalActivePersonsIds.forEach((id, idx) => {
       expense[`users__${idx}__user_id`] = id;
       expense[`users__${idx}__owed_share`] = expenses.get(id);
-      if(id.toString() === payer.value.toString()){
-        expense[`users__${idx}__paid_share`] = total;
+      //check if id is included in finalPayersAndShares
+      let temp = finalPayersAndShares.find((item) => {
+        return Number(item.id) === Number(id);
+      })
+      if(temp){
+        expense[`users__${idx}__paid_share`] = temp.share;
       }
       else{
         expense[`users__${idx}__paid_share`] = 0;
@@ -125,6 +166,7 @@ const TotalBox = ({
         }
       })
       .catch(error => {
+        console.log(error);
         alert("Something went wrong. Please try again later");
       });
   }
@@ -200,6 +242,6 @@ ItemName                                      Amount\n
     string += " ".repeat(48) + expenses.get(id) + "\n\n";
   });
   // console.log(string);  
-  return string;
+  return string.slice(0,2048);
 
 }
