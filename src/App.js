@@ -5,6 +5,8 @@ import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { WelcomePage } from "./pages/WelcomePage";
 import Protected from "./Routes/Protected";
+import { Analytics } from '@vercel/analytics/react';
+
 
 export const personitemListContext = createContext({
   personItemList: [],
@@ -13,26 +15,29 @@ export const personitemListContext = createContext({
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<WelcomePage />} />
-        <Route
-          path="/login"
-          element={
-            <Protected> </Protected>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <Protected>
-              <HomePage />
-            </Protected>
-          }
-        />
-        <Route path="*" element={<WelcomePage />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <Analytics />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<WelcomePage />} />
+          <Route
+            path="/login"
+            element={
+              <Protected> </Protected>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <Protected>
+                <HomePage />
+              </Protected>
+            }
+          />
+          <Route path="*" element={<WelcomePage />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
