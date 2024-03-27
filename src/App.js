@@ -13,9 +13,9 @@ export const personitemListContext = createContext({
 
 function App() {
   return (
-    <BrowserRouter basename={"/"}>
+    <BrowserRouter>
       <Routes>
-        <Route path="" element={<WelcomePage />} />
+        <Route path="/" element={<WelcomePage />} />
         <Route
           path="/login"
           element={
