@@ -1,15 +1,22 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Nav from "../components/Nav";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Extension from "../components/Extension";
+import NewSitePopup from "../components/NewSitePopup";
+import BackDrop from "../components/BackDrop";
+import { useLocalStorage } from "../components/useLocalStorage";
+
+
 
 
 export const WelcomePage = () => {
 
   const [accessToken, setAccessToken] = useState("");
   const [showExtension, setShowExtension] = useState(true);
+  let showPopup;
+  const [showNewSitePopup, setShowNewSitePopup] = useLocalStorage(showPopup, true);
   const [inputs, setInputs] = useState({
     email: "",
     name: "",
@@ -22,6 +29,23 @@ export const WelcomePage = () => {
       : "";
     setAccessToken(access_token);
   }, [])
+
+  const navigateAway = useCallback(() => {
+    setShowNewSitePopup(true)
+  }, [setShowNewSitePopup])
+
+  useEffect(() => {
+    // if user navigates away to a completely different site
+    // or refreshes the page etc
+    window.addEventListener("beforeunload", navigateAway);
+
+    // show popup again if user navigates to another page on the same site
+    // return () => {
+    //   navigateAway();
+    //   window.removeEventListener("beforeunload", navigateAway);
+    // };
+  }, [showPopup, navigateAway]);
+
 
   function onLogutClick() {
     setAccessToken("");
@@ -57,12 +81,18 @@ export const WelcomePage = () => {
   };
 
   return (
-    <div>
+    <div className="relative">
       <Nav onLogutClick={onLogutClick} />
+
+      {showNewSitePopup &&
+        <>
+          <BackDrop />
+          <NewSitePopup setShowNewSitePopup={setShowNewSitePopup} />
+        </>
+      }
+
       <div className="font-bold text-6xl text-center py-80 shadow-lg bg-black text-white ">
-        
         <Extension showExtension={showExtension} setShowExtension={setShowExtension} />
-        
         An Easy way to Manage your Expenses
         <div>
           {accessToken ?
